@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>上传截图 - 轻跑如风</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 15px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+    header h1 { font-size: 1.6em; margin-bottom: 8px; }
+    header p { opacity: 0.9; font-size: 0.95em; }
+    
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .nav a {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      font-size: 0.95em;
+    }
+    .nav a:active { background: rgba(255,255,255,0.4); }
+    .nav a.active { background: white; color: #667eea; }
+    
+    .upload-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    
+    .upload-area {
+      border: 2px dashed #667eea;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: rgba(102,126,234,0.05);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .upload-area:active { background: rgba(102,126,234,0.15); }
+    .upload-area.dragover { background: rgba(102,126,234,0.2); border-color: #764ba2; }
+    
+    .upload-icon { font-size: 3em; margin-bottom: 15px; }
+    .upload-text { color: #666; margin-bottom: 8px; font-size: 1em; }
+    .upload-hint { font-size: 0.85em; color: #999; }
+    
+    #fileInput { 
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+    }
+    
+    .form-group { margin-top: 20px; }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 0.95em;
+    }
+    .form-group input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+      -webkit-appearance: none;
+    }
+    .form-group input:focus { outline: none; border-color: #667eea; }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      border-radius: 30px;
+      font-size: 1em;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+      transition: all 0.3s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    
+    .preview {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .preview img {
+      max-width: 100%;
+      max-height: 250px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      display: none;
+    }
+    .result.success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+    .result.error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+    .result.warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+    
+    .result h3 { margin-bottom: 12px; font-size: 1.1em; }
+    
+    .confirm-box {
+      margin-top: 25px;
+      padding: 20px;
+      background: rgba(255,255,255,0.98);
+      border-radius: 12px;
+      border: 2px solid #667eea;
+    }
+    .confirm-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .confirm-item label {
+      display: block;
+      font-size: 0.85em;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .confirm-value {
+      font-weight: 600;
+      color: #333;
+      padding: 8px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .confirm-item input {
+      font-size: 1em;
+    }
+    .confirm-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    .confirm-actions .btn {
+      flex: 1;
+      max-width: 150px;
+    }
+    
+    .result-data {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .result-item {
+      background: rgba(255,255,255,0.5);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .result-item-label { font-size: 0.8em; color: #666; }
+    .result-item-value { font-weight: 600; color: #333; font-size: 0.95em; }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 25px;
+    }
+    .spinner {
+      width: 45px;
+      height: 45px;
+      border: 4px solid #eee;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .rules {
+      background: rgba(102,126,234,0.1);
+      border-left: 4px solid #667eea;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .rules h4 { color: #667eea; margin-bottom: 8px; font-size: 0.95em; }
+    .rules ul { margin-left: 18px; color: #555; }
+    .rules li { margin: 4px 0; font-size: 0.9em; }
+    
+    /* 移动端适配 */
+    @media (max-width: 480px) {
+      body { padding: 10px; }
+      header h1 { font-size: 1.4em; }
+      .upload-card { padding: 15px; }
+      .upload-area { padding: 30px 15px; }
+      .upload-icon { font-size: 2.5em; }
+      .nav a { padding: 8px 16px; font-size: 0.9em; }
+      .btn { padding: 12px 24px; font-size: 0.95em; }
+      .result-data { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .result-item { padding: 8px; }
+      .confirm-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .confirm-actions { flex-direction: column; }
+      .confirm-actions .btn { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-cloud-arrow-up" style="color:#fff;"></i> 上传截图</h1>
+      <p>悦跑圈/Keep 等跑步 APP 截图</p>
+    </header>
+    
+    <nav class="nav">
+      <a href="/"><i class="fas fa-house" style="margin-right:6px;"></i>首页</a>
+      <a href="/upload" class="active"><i class="fas fa-cloud-arrow-up" style="margin-right:6px;"></i>上传</a>
+      <a href="/stats"><i class="fas fa-chart-simple" style="margin-right:6px;"></i>统计</a>
+      <a href="/runners"><i class="fas fa-users-line" style="margin-right:6px;"></i>人员</a>
+    </nav>
+    
+    <style>
+      .nav a i { color: rgba(255,255,255,0.9); transition:transform 0.3s; }
+      .nav a:hover i { color: #fff; transform:scale(1.1); }
+      .nav a.active i { color: #667eea; }
+    </style>
+    
+    <div class="upload-card">
+      <div class="rules">
+        <h4>✅ 有效数据标准</h4>
+        <ul>
+          <li>距离 ≥ 3 公里</li>
+          <li>配速 < 12 分钟/公里</li>
+        </ul>
+      </div>
+      
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon"><i class="fas fa-cloud-arrow-up" style="font-size:3em;color:#667eea;margin-bottom:15px;"></i></div>
+        <div class="upload-text">点击或拖拽上传截图</div>
+        <div class="upload-hint">支持 JPG、PNG 格式，最大 10MB</div>
+      </div>
+      
+      <input type="file" id="fileInput" accept="image/*" style="position:absolute;left:-9999px;top:-9999px;">
+      
+      <div class="preview" id="preview"></div>
+      
+      <div class="form-group">
+        <label for="group"><i class="fas fa-layer-group" style="color:#667eea;margin-right:6px;"></i>组别</label>
+        <select id="group" onchange="onGroupChange()" style="width:100%;padding:12px;border:2px solid #eee;border-radius:10px;font-size:1em;background:white;">
+          <option value="">选择组别</option>
+          <option value="第一组">第一组</option>
+          <option value="第二组">第二组</option>
+          <option value="第三组">第三组</option>
+          <option value="第四组">第四组</option>
+          <option value="第五组">第五组</option>
+          <option value="第六组">第六组</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="runner"><i class="fas fa-user" style="color:#667eea;margin-right:6px;"></i>跑步人员</label>
+        <select id="runner" required style="width:100%;padding:12px;border:2px solid #eee;border-radius:10px;font-size:1em;background:white;">
+          <option value="">请先选择组别</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="runDate"><i class="fas fa-calendar" style="color:#667eea;margin-right:6px;"></i>跑步日期</label>
+        <input type="date" id="runDate" required>
+      </div>
+      
+      <button class="btn" id="uploadBtn" disabled><i class="fas fa-wand-magic-sparkles"></i> 开始识别</button>
+      
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>正在 OCR 识别中，请稍候...</div>
+      </div>
+      
+      <!-- 识别结果确认 -->
+      <div class="confirm-box" id="confirmBox" style="display:none;">
+        <h3 style="margin-bottom:15px;color:#333;"><i class="fas fa-clipboard-check" style="color:#667eea;margin-right:8px;"></i>识别结果</h3>
+        <p style="color:#666;font-size:0.9em;margin-bottom:15px;"><i class="fas fa-lock" style="margin-right:4px;"></i>识别数据不可修改，请确认是否保存</p>
+        <div class="confirm-grid">
+          <div class="confirm-item">
+            <label><i class="fas fa-user" style="color:#667eea;margin-right:4px;"></i>人员</label>
+            <div class="confirm-value" id="confirmRunner"></div>
+          </div>
+          <div class="confirm-item">
+            <label><i class="fas fa-calendar" style="color:#667eea;margin-right:4px;"></i>日期</label>
+            <div class="confirm-value" id="confirmDateDisplay"></div>
+          </div>
+          <div class="confirm-item">
+            <label><i class="fas fa-road" style="color:#667eea;margin-right:4px;"></i>距离 (km)</label>
+            <div class="confirm-value" id="confirmDistanceDisplay"></div>
+          </div>
+          <div class="confirm-item">
+            <label><i class="fas fa-bolt" style="color:#f39c12;margin-right:4px;"></i>配速</label>
+            <div class="confirm-value" id="confirmPaceDisplay"></div>
+          </div>
+          <div class="confirm-item">
+            <label><i class="fas fa-stopwatch" style="color:#3498db;margin-right:4px;"></i>时长</label>
+            <div class="confirm-value" id="confirmDurationDisplay"></div>
+          </div>
+          <div class="confirm-item">
+            <label><i class="fas fa-fire" style="color:#e74c3c;margin-right:4px;"></i>卡路里</label>
+            <div class="confirm-value" id="confirmCaloriesDisplay"></div>
+          </div>
+        </div>
+        
+
+        
+        <div class="confirm-actions">
+          <button class="btn btn-secondary" id="cancelBtn" style="background:#6c757d;"><i class="fas fa-xmark"></i> 取消</button>
+          <button class="btn" id="confirmSaveBtn"><i class="fas fa-check"></i> 确认保存</button>
+        </div>
+      </div>
+      
+      <div class="result" id="result"></div>
+    </div>
+  </div>
+  
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('result');
+    const runDate = document.getElementById('runDate');
+    const runner = document.getElementById('runner');
+    const group = document.getElementById('group');
+    
+    // 确认框元素
+    const confirmBox = document.getElementById('confirmBox');
+    const confirmRunner = document.getElementById('confirmRunner');
+    const confirmDateDisplay = document.getElementById('confirmDateDisplay');
+    const confirmDistanceDisplay = document.getElementById('confirmDistanceDisplay');
+    const confirmPaceDisplay = document.getElementById('confirmPaceDisplay');
+    const confirmDurationDisplay = document.getElementById('confirmDurationDisplay');
+    const confirmCaloriesDisplay = document.getElementById('confirmCaloriesDisplay');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+    
+    let selectedFile = null;
+    let ocrResult = null;
+    let imageFilename = null;
+    let config = null;
+    
+    // 初始化人员配置
+    async function initUpload() {
+      try {
+        const configRes = await fetch('/api/config');
+        config = await configRes.json();
+        updateRunnerOptions();
+      } catch (error) {
+        console.error('加载配置失败:', error);
+      }
+    }
+    
+    // 组别变化时更新人员选项
+    function onGroupChange() {
+      updateRunnerOptions();
+    }
+    
+    // 更新人员下拉框选项
+    function updateRunnerOptions() {
+      const selectedGroup = group.value;
+      runner.innerHTML = '<option value="">请选择人员</option>';
+      
+      let runners = config.runners;
+      if (selectedGroup) {
+        runners = runners.filter(r => r.group === selectedGroup);
+      }
+      runners.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+      runners.forEach(r => {
+        const option = document.createElement('option');
+        option.value = r.name;
+        option.textContent = r.name;
+        runner.appendChild(option);
+      });
+    }
+    
+    // 设置默认日期为今天
+    runDate.valueAsDate = new Date();
+    initUpload();
+    // 点击上传
+    uploadArea.onclick = function(e) {
+      console.log('Upload area clicked!');
+      fileInput.click();
+    };
+    
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleFile(e.target.files[0]);
+      }
+      // 重置 value，允许重复选择同一文件
+      e.target.value = '';
+    });
+    
+    // 拖拽上传
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+    
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showResult('error', '请选择图片文件');
+        return;
+      }
+      
+      selectedFile = file;
+      
+      // 显示预览
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.innerHTML = `<img src="${e.target.result}" alt="预览">`;
+      };
+      reader.readAsDataURL(file);
+      
+      uploadBtn.disabled = false;
+      result.style.display = 'none';
+    }
+    
+    uploadBtn.addEventListener('click', async () => {
+      if (!selectedFile || !runDate.value || !runner.value) {
+        showResult('error', '请选择图片、人员和日期');
+        return;
+      }
+      
+      loading.style.display = 'block';
+      uploadBtn.disabled = true;
+      result.style.display = 'none';
+      confirmBox.style.display = 'none';
+      
+      const formData = new FormData();
+      formData.append('screenshot', selectedFile);
+      formData.append('runDate', runDate.value);
+      formData.append('runner', runner.value);
+      
+      try {
+        const response = await fetch('/api/preview', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          ocrResult = data.data;
+          imageFilename = data.data.imageFilename;  // 保存图片文件名
+          
+          // 填充确认框
+          confirmRunner.textContent = runner.value;
+          confirmDateDisplay.textContent = runDate.value;
+          confirmDistanceDisplay.textContent = data.data.distance || '-';
+          confirmPaceDisplay.textContent = data.data.pace || '-';
+          confirmDurationDisplay.textContent = data.data.duration || '-';
+          confirmCaloriesDisplay.textContent = data.data.calories || '-';
+          
+          // 显示确认框
+          loading.style.display = 'none';
+          confirmBox.style.display = 'block';
+        } else {
+          showResult('error', data.error || '识别失败');
+          loading.style.display = 'none';
+          uploadBtn.disabled = false;
+        }
+        
+      } catch (error) {
+        showResult('error', '识别失败：' + error.message);
+        loading.style.display = 'none';
+        uploadBtn.disabled = false;
+      }
+    });
+    
+    // 取消确认
+    cancelBtn.addEventListener('click', () => {
+      confirmBox.style.display = 'none';
+      uploadBtn.disabled = false;
+      ocrResult = null;
+    });
+    
+    // 确认保存
+    confirmSaveBtn.addEventListener('click', async () => {
+      confirmSaveBtn.disabled = true;
+      confirmSaveBtn.textContent = '保存中...';
+      
+      try {
+        const response = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            runner: runner.value,
+            runDate: runDate.value,
+            distance: ocrResult.distance,
+            pace: ocrResult.pace,
+            duration: ocrResult.duration,
+            calories: ocrResult.calories,
+            rawOcrText: ocrResult?.rawText || '',
+            imageFilename: imageFilename || ''
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showResult('success', '✅ 保存成功！3 秒后跳转...');
+          confirmBox.style.display = 'none';
+          setTimeout(() => {
+            // 强制刷新，避免缓存
+            window.location.href = '/?t=' + Date.now();
+          }, 3000);
+        } else {
+          // 显示明确的错误原因
+          let errorMsg = data.error || '保存失败';
+          if (data.validationErrors && Array.isArray(data.validationErrors) && data.validationErrors.length > 0) {
+            errorMsg += '<ul style="text-align:left;margin-top:10px;padding-left:20px;">' + 
+              data.validationErrors.map(e => `<li style="margin:5px 0;">${e}</li>`).join('') + 
+              '</ul>';
+          }
+          showResult('error', errorMsg);
+          confirmSaveBtn.disabled = false;
+          confirmSaveBtn.textContent = '✓ 确认保存';
+        }
+      } catch (error) {
+        showResult('error', '保存失败：' + error.message);
+        confirmSaveBtn.disabled = false;
+        confirmSaveBtn.textContent = '✓ 确认保存';
+      }
+    });
+    
+    function showResult(type, message) {
+      result.className = `result ${type}`;
+      result.innerHTML = typeof message === 'string' ? `<h3>${message}</h3>` : message;
+      result.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
