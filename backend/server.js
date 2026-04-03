@@ -26,7 +26,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '../frontend'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    }
+  }
+}));
 // 图片压缩中间件（锐化处理，减小文件大小）
 const sharp = require('sharp');
 app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
