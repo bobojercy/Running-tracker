@@ -240,6 +240,7 @@
       <a href="/"><i class="fas fa-house" style="margin-right:6px;"></i>首页</a>
       <a href="/upload" class="active"><i class="fas fa-cloud-arrow-up" style="margin-right:6px;"></i>上传</a>
       <a href="/stats"><i class="fas fa-chart-simple" style="margin-right:6px;"></i>统计</a>
+      <a href="/details"><i class="fas fa-list" style="margin-right:6px;"></i>明细</a>
       <a href="/runners"><i class="fas fa-users-line" style="margin-right:6px;"></i>人员</a>
     </nav>
     
@@ -272,12 +273,6 @@
         <label for="group"><i class="fas fa-layer-group" style="color:#667eea;margin-right:6px;"></i>组别</label>
         <select id="group" onchange="onGroupChange()" style="width:100%;padding:12px;border:2px solid #eee;border-radius:10px;font-size:1em;background:white;">
           <option value="">选择组别</option>
-          <option value="第一组">第一组</option>
-          <option value="第二组">第二组</option>
-          <option value="第三组">第三组</option>
-          <option value="第四组">第四组</option>
-          <option value="第五组">第五组</option>
-          <option value="第六组">第六组</option>
         </select>
       </div>
       
@@ -375,6 +370,17 @@
       try {
         const configRes = await fetch('/api/config');
         config = await configRes.json();
+        
+        // 动态加载组别选项
+        const groupSelect = document.getElementById('group');
+        groupSelect.innerHTML = '<option value="">选择组别</option>';
+        config.groups.forEach(g => {
+          const option = document.createElement('option');
+          option.value = g;
+          option.textContent = g;
+          groupSelect.appendChild(option);
+        });
+        
         updateRunnerOptions();
       } catch (error) {
         console.error('加载配置失败:', error);
