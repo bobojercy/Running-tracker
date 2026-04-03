@@ -130,10 +130,8 @@ app.post('/api/preview', upload.single('screenshot'), async (req, res) => {
       return res.status(400).json({ error: '请上传截图文件' });
     }
 
-    const { runDate, runner } = req.body;
-    if (!runDate) {
-      return res.status(400).json({ error: '请选择跑步日期' });
-    }
+    const { runner } = req.body;
+    // 日期由 OCR 自动识别，不需要前端传递
     if (!runner) {
       return res.status(400).json({ error: '请选择跑步人员' });
     }
@@ -149,7 +147,7 @@ app.post('/api/preview', upload.single('screenshot'), async (req, res) => {
       success: true,
       data: {
         runner: runner,
-        date: ocrResult.date || runDate,  // 优先使用 OCR 识别的日期
+        date: ocrResult.date,  // OCR 识别的日期
         distance: ocrResult.distance,
         pace: ocrResult.pace,
         paceMinPerKm: ocrResult.paceMinPerKm,
@@ -251,10 +249,8 @@ app.post('/api/upload', upload.single('screenshot'), async (req, res) => {
       return res.status(400).json({ error: '请上传截图文件' });
     }
 
-    const { runDate, runner } = req.body;
-    if (!runDate) {
-      return res.status(400).json({ error: '请选择跑步日期' });
-    }
+    const { runner } = req.body;
+    // 日期由 OCR 自动识别
     if (!runner) {
       return res.status(400).json({ error: '请选择跑步人员' });
     }
