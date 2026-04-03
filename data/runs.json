@@ -2734,7 +2734,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "邱元渡",
@@ -3478,7 +3478,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "贺丽",
@@ -3802,7 +3802,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "刘金花",
@@ -4570,7 +4570,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "蒲敏",
@@ -4906,7 +4906,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "龙云霞",
@@ -5866,7 +5866,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "陈曦",
@@ -6166,7 +6166,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "肖金龙",
@@ -6994,7 +6994,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "明飞",
@@ -7258,7 +7258,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "李银辉",
@@ -8086,7 +8086,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "黄也妮",
@@ -8362,7 +8362,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "倪志勇",
@@ -9178,7 +9178,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "刘佳",
@@ -9670,7 +9670,7 @@
       "rawOcrText": "导入数据",
       "imageFilename": "",
       "isValid": true,
-      "paceMinPerKm": 7.0
+      "paceMinPerKm": 7
     },
     {
       "runner": "张葵",
@@ -10175,6 +10175,594 @@
       "imageFilename": "",
       "isValid": true,
       "paceMinPerKm": 7.9
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-03-23",
+      "distance": 3.98,
+      "pace": "7:06",
+      "duration": "27:04",
+      "calories": 278,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.1
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-03-24",
+      "distance": 4.5,
+      "pace": "7:09",
+      "duration": "31:06",
+      "calories": 315,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.15
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-03-25",
+      "distance": 3.11,
+      "pace": "7:12",
+      "duration": "21:08",
+      "calories": 217,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.2
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-03-26",
+      "distance": 5.35,
+      "pace": "7:15",
+      "duration": "37:10",
+      "calories": 374,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.25
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-03-27",
+      "distance": 5.07,
+      "pace": "7:18",
+      "duration": "35:12",
+      "calories": 354,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.3
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-03-28",
+      "distance": 4.84,
+      "pace": "7:21",
+      "duration": "33:14",
+      "calories": 338,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.35
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-03-29",
+      "distance": 3.16,
+      "pace": "7:24",
+      "duration": "22:16",
+      "calories": 221,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.4
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-03-30",
+      "distance": 3.82,
+      "pace": "7:27",
+      "duration": "26:18",
+      "calories": 267,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.45
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-03-31",
+      "distance": 3.06,
+      "pace": "7:30",
+      "duration": "21:20",
+      "calories": 214,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.5
+    },
+    {
+      "runner": "阳雷",
+      "date": "2026-04-01",
+      "distance": 3.14,
+      "pace": "7:33",
+      "duration": "21:22",
+      "calories": 219,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.55
+    },
+    {
+      "runner": "刘旻",
+      "date": "2026-03-21",
+      "distance": 5.13,
+      "pace": "8:07",
+      "duration": "41:05",
+      "calories": 359,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.12
+    },
+    {
+      "runner": "刘旻",
+      "date": "2026-03-23",
+      "distance": 5.41,
+      "pace": "8:13",
+      "duration": "43:09",
+      "calories": 378,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.22
+    },
+    {
+      "runner": "刘旻",
+      "date": "2026-03-24",
+      "distance": 3.9,
+      "pace": "8:16",
+      "duration": "31:11",
+      "calories": 273,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.27
+    },
+    {
+      "runner": "刘旻",
+      "date": "2026-03-25",
+      "distance": 7.17,
+      "pace": "8:19",
+      "duration": "57:13",
+      "calories": 501,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.32
+    },
+    {
+      "runner": "刘旻",
+      "date": "2026-03-30",
+      "distance": 9.01,
+      "pace": "8:34",
+      "duration": "72:23",
+      "calories": 630,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.57
+    },
+    {
+      "runner": "刘旻",
+      "date": "2026-03-31",
+      "distance": 5.24,
+      "pace": "8:37",
+      "duration": "41:25",
+      "calories": 366,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.62
+    },
+    {
+      "runner": "刘旻",
+      "date": "2026-04-02",
+      "distance": 4.96,
+      "pace": "8:43",
+      "duration": "39:29",
+      "calories": 347,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.72
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-21",
+      "distance": 3.09,
+      "pace": "9:14",
+      "duration": "27:10",
+      "calories": 216,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.23
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-22",
+      "distance": 3.15,
+      "pace": "9:17",
+      "duration": "28:12",
+      "calories": 220,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.28
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-23",
+      "distance": 3.1,
+      "pace": "9:20",
+      "duration": "27:14",
+      "calories": 217,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.33
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-24",
+      "distance": 5.43,
+      "pace": "9:23",
+      "duration": "48:16",
+      "calories": 380,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.38
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-25",
+      "distance": 5.54,
+      "pace": "9:26",
+      "duration": "49:18",
+      "calories": 387,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.43
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-27",
+      "distance": 3.2,
+      "pace": "9:32",
+      "duration": "28:22",
+      "calories": 224,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.53
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-28",
+      "distance": 5.22,
+      "pace": "9:35",
+      "duration": "46:24",
+      "calories": 365,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.58
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-29",
+      "distance": 3.95,
+      "pace": "9:38",
+      "duration": "35:26",
+      "calories": 276,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.63
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-30",
+      "distance": 7.14,
+      "pace": "9:41",
+      "duration": "64:28",
+      "calories": 499,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.68
+    },
+    {
+      "runner": "浦敏",
+      "date": "2026-03-31",
+      "distance": 5.05,
+      "pace": "9:44",
+      "duration": "45:30",
+      "calories": 353,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 9.73
+    },
+    {
+      "runner": "康雄献",
+      "date": "2026-03-22",
+      "distance": 45.14,
+      "pace": "7:24",
+      "duration": "315:17",
+      "calories": 3159,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.4
+    },
+    {
+      "runner": "康雄献",
+      "date": "2026-03-26",
+      "distance": 8,
+      "pace": "7:36",
+      "duration": "56:25",
+      "calories": 560,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.6
+    },
+    {
+      "runner": "康雄献",
+      "date": "2026-03-27",
+      "distance": 10.05,
+      "pace": "7:39",
+      "duration": "70:27",
+      "calories": 703,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.65
+    },
+    {
+      "runner": "康雄献",
+      "date": "2026-03-28",
+      "distance": 3.14,
+      "pace": "7:42",
+      "duration": "21:29",
+      "calories": 219,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.7
+    },
+    {
+      "runner": "康雄献",
+      "date": "2026-03-29",
+      "distance": 21.85,
+      "pace": "7:45",
+      "duration": "152:31",
+      "calories": 1529,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.75
+    },
+    {
+      "runner": "康雄献",
+      "date": "2026-03-30",
+      "distance": 4.5,
+      "pace": "7:48",
+      "duration": "31:33",
+      "calories": 315,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.8
+    },
+    {
+      "runner": "康雄献",
+      "date": "2026-03-31",
+      "distance": 10.11,
+      "pace": "7:51",
+      "duration": "70:35",
+      "calories": 707,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.85
+    },
+    {
+      "runner": "康雄献",
+      "date": "2026-04-01",
+      "distance": 5.05,
+      "pace": "7:54",
+      "duration": "35:37",
+      "calories": 353,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.9
+    },
+    {
+      "runner": "康雄献",
+      "date": "2026-04-02",
+      "distance": 10.29,
+      "pace": "7:57",
+      "duration": "72:39",
+      "calories": 720,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 7.95
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-21",
+      "distance": 3.14,
+      "pace": "8:28",
+      "duration": "25:20",
+      "calories": 219,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.47
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-22",
+      "distance": 3.03,
+      "pace": "8:31",
+      "duration": "24:22",
+      "calories": 212,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.52
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-23",
+      "distance": 3.04,
+      "pace": "8:34",
+      "duration": "24:24",
+      "calories": 212,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.57
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-24",
+      "distance": 4.5,
+      "pace": "8:37",
+      "duration": "36:26",
+      "calories": 315,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.62
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-25",
+      "distance": 3.03,
+      "pace": "8:40",
+      "duration": "24:28",
+      "calories": 212,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.67
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-26",
+      "distance": 5.01,
+      "pace": "8:43",
+      "duration": "40:30",
+      "calories": 350,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.72
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-27",
+      "distance": 5.7,
+      "pace": "8:46",
+      "duration": "45:32",
+      "calories": 399,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.77
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-28",
+      "distance": 3.02,
+      "pace": "8:49",
+      "duration": "24:34",
+      "calories": 211,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.82
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-29",
+      "distance": 3.02,
+      "pace": "8:52",
+      "duration": "24:36",
+      "calories": 211,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.87
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-30",
+      "distance": 3,
+      "pace": "8:55",
+      "duration": "24:38",
+      "calories": 210,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.92
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-03-31",
+      "distance": 3.03,
+      "pace": "8:58",
+      "duration": "24:40",
+      "calories": 212,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.97
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-04-01",
+      "distance": 3.02,
+      "pace": "8:01",
+      "duration": "24:42",
+      "calories": 211,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.02
+    },
+    {
+      "runner": "肖志红",
+      "date": "2026-04-02",
+      "distance": 3.02,
+      "pace": "8:04",
+      "duration": "24:44",
+      "calories": 211,
+      "rawOcrText": "导入数据",
+      "imageFilename": "",
+      "isValid": true,
+      "paceMinPerKm": 8.07
     }
   ]
 }
