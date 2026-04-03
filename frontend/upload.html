@@ -538,7 +538,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             runner: runner.value,
-            // 日期由 OCR 自动识别
+            date: ocrResult.date,  // OCR 识别的日期
             distance: ocrResult.distance,
             pace: ocrResult.pace,
             duration: ocrResult.duration,

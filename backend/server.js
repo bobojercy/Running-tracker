@@ -182,9 +182,12 @@ app.use((req, res, next) => {
 // API: 保存确认后的数据
 app.post('/api/save', async (req, res) => {
   try {
-    const { runner, runDate, distance, pace, duration, calories, rawOcrText, imageFilename } = req.body;
+    const { runner, runDate, distance, pace, duration, calories, rawOcrText, imageFilename, date } = req.body;
     
-    if (!runner || !runDate) {
+    // 日期优先使用 OCR 识别的 date 字段，其次使用 runDate
+    const finalDate = date || runDate;
+    
+    if (!runner || !finalDate) {
       return res.status(400).json({ error: '人员和日期必填' });
     }
     
