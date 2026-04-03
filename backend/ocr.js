@@ -161,7 +161,51 @@ async function recognizeRunningData(imagePath) {
  * 解析数据
  */
 function parseRunningData(text, lines) {
-  const result = { distance: null, pace: null, paceMinPerKm: null, duration: null, calories: null, rawText: text };
+  const result = { distance: null, pace: null, paceMinPerKm: null, duration: null, calories: null, date: null, rawText: text };
+  
+  // 识别日期 - 尝试匹配多种日期格式
+  const datePatterns = [
+    /(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/,  // 2024-01-15, 2024/01/15
+    /(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/,  // 01-15-2024
+    /(\d{4})年 (\d{1,2})月 (\d{1,2})日/,     // 2024 年 01 月 15 日
+    /(\d{1,2})月 (\d{1,2})日/,               // 01 月 15 日
+  ];
+  
+  for (const line of lines) {
+    for (const pattern of datePatterns) {
+      const match = line.match(pattern);
+      if (match) {
+        let year, month, day;
+        if (match[0].includes('年')) {
+          year = match[1];
+          month = match[2].padStart(2, '0');
+          day = match[3].padStart(2, '0');
+        } else if (match[1].length === 4) {
+          year = match[1];
+          month = match[2].padStart(2, '0');
+          day = match[3].padStart(2, '0');
+        } else {
+          // 假设年份为 2024
+          year = '2024';
+          month = match[1].padStart(2, '0');
+          day = match[2].padStart(2, '0');
+        }
+        
+        // 验证日期合理性
+        const dateStr = `${year}-${month}-${day}`;
+        const dateObj = new Date(dateStr);
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        
+        if (dateObj >= thirtyDaysAgo && dateObj <= now) {
+          result.date = dateStr;
+          console.log(`✅ 识别到日期：${result.date} (来自：${line})`);
+          break;
+        }
+      }
+    }
+    if (result.date) break;
+  }
   
   // 配速/时长/卡路里 - 尝试在同一行匹配
   for (const line of lines) {

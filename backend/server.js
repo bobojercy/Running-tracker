@@ -149,14 +149,14 @@ app.post('/api/preview', upload.single('screenshot'), async (req, res) => {
       success: true,
       data: {
         runner: runner,
-        date: runDate,
+        date: ocrResult.date || runDate,  // 优先使用 OCR 识别的日期
         distance: ocrResult.distance,
         pace: ocrResult.pace,
         paceMinPerKm: ocrResult.paceMinPerKm,
         duration: ocrResult.duration,
         calories: ocrResult.calories,
         rawText: ocrResult.rawText,
-        imageFilename: req.file.filename.replace(/\.(\w+)$/, '_compressed.$1')  // 返回压缩后的文件名
+        imageFilename: req.file.filename.replace(/\.(\w+)$/, '_compressed.$1')
       },
       validation
     });
