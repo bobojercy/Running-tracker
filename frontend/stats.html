@@ -156,6 +156,7 @@
       <a href="/"><i class="fas fa-house" style="margin-right:6px;"></i>首页</a>
       <a href="/upload"><i class="fas fa-cloud-arrow-up" style="margin-right:6px;"></i>上传</a>
       <a href="/stats" class="active"><i class="fas fa-chart-simple" style="margin-right:6px;"></i>统计</a>
+      <a href="/details"><i class="fas fa-list" style="margin-right:6px;"></i>明细</a>
       <a href="/runners"><i class="fas fa-users-line" style="margin-right:6px;"></i>人员</a>
     </nav>
     
@@ -168,12 +169,6 @@
     <div style="text-align:center;margin-bottom:15px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
       <select id="groupFilter" onchange="onGroupChange()" style="padding:8px 15px;border-radius:20px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.9);font-size:0.95em;min-width:120px;">
         <option value="">全部组别</option>
-        <option value="第一组">第一组</option>
-        <option value="第二组">第二组</option>
-        <option value="第三组">第三组</option>
-        <option value="第四组">第四组</option>
-        <option value="第五组">第五组</option>
-        <option value="第六组">第六组</option>
       </select>
       <select id="runnerFilter" onchange="loadData()" style="padding:8px 15px;border-radius:20px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.9);font-size:0.95em;min-width:120px;">
         <option value="">全部人员</option>
@@ -295,8 +290,19 @@
     // 初始化
     async function initStats() {
       try {
-        const configRes = await fetch('/api/config');
+        const configRes = await fetch('/api/config?t=' + Date.now());
         config = await configRes.json();
+        
+        // 填充组别下拉框
+        const groupFilter = document.getElementById('groupFilter');
+        groupFilter.innerHTML = '<option value="">全部组别</option>';
+        config.groups.forEach(g => {
+          const option = document.createElement('option');
+          option.value = g;
+          option.textContent = g;
+          groupFilter.appendChild(option);
+        });
+        
         updateRunnerOptions();
         loadData();
       } catch (error) {

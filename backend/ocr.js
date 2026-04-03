@@ -176,6 +176,10 @@ function parseRunningData(text, lines) {
     /(\d{4})(\d{2})(\d{2})/,                    // 20240115
   ];
   
+  console.log('\n🔍 开始识别日期，共 ' + lines.length + ' 行文本');
+  console.log('前 10 行文本:');
+  lines.slice(0, 10).forEach((line, i) => console.log('  [' + i + ']: ' + line));
+  
   for (const line of lines) {
     for (const pattern of datePatterns) {
       const match = line.match(pattern);

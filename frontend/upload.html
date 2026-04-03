@@ -285,9 +285,6 @@
       </div>
       
       <div class="form-group">
-        <label for="runDate"><i class="fas fa-calendar" style="color:#667eea;margin-right:6px;"></i>跑步日期</label>
-        <input type="date" id="runDate" readonly required style="background:#f5f5f5;cursor:not-allowed;">
-        <div style="font-size:0.85em;color:#999;margin-top:5px;"><i class="fas fa-info-circle"></i> 日期将根据图片自动识别，无需手动填写</div>
       </div>
       
       <button class="btn" id="uploadBtn" disabled><i class="fas fa-wand-magic-sparkles"></i> 开始识别</button>
@@ -347,7 +344,7 @@
     const uploadBtn = document.getElementById('uploadBtn');
     const loading = document.getElementById('loading');
     const result = document.getElementById('result');
-    const runDate = document.getElementById('runDate');
+    // 日期由 OCR 自动识别
     const runner = document.getElementById('runner');
     const group = document.getElementById('group');
     
@@ -479,7 +476,7 @@
       
       const formData = new FormData();
       formData.append('screenshot', selectedFile);
-      formData.append('runDate', runDate.value);
+      // 日期由 OCR 自动识别，不需要传递
       formData.append('runner', runner.value);
       
       try {
@@ -496,12 +493,12 @@
           
           // 自动填充识别的日期
           if (data.data.date) {
-            runDate.value = data.data.date;
+            // 日期已在识别结果中显示
           }
           
           // 填充确认框
           confirmRunner.textContent = runner.value;
-          confirmDateDisplay.textContent = data.data.date || runDate.value || '-';
+          confirmDateDisplay.textContent = data.data.date || '-';
           confirmDistanceDisplay.textContent = data.data.distance || '-';
           confirmPaceDisplay.textContent = data.data.pace || '-';
           confirmDurationDisplay.textContent = data.data.duration || '-';
@@ -541,7 +538,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             runner: runner.value,
-            runDate: runDate.value,
+            // 日期由 OCR 自动识别
             distance: ocrResult.distance,
             pace: ocrResult.pace,
             duration: ocrResult.duration,
