@@ -165,10 +165,13 @@ function parseRunningData(text, lines) {
   
   // 识别日期 - 尝试匹配多种日期格式
   const datePatterns = [
-    /(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/,  // 2024-01-15, 2024/01/15
-    /(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/,  // 01-15-2024
-    /(\d{4})年 (\d{1,2})月 (\d{1,2})日/,     // 2024 年 01 月 15 日
-    /(\d{1,2})月 (\d{1,2})日/,               // 01 月 15 日
+    /(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/,      // 2024-01-15, 2024/01/15
+    /(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/,      // 01-15-2024
+    /(\d{4})年 (\d{1,2})月 (\d{1,2}) 日/,        // 2024 年 01 月 15 日
+    /(\d{1,2}) 月 (\d{1,2}) 日/,                  // 01 月 15 日
+    /(\d{4})\.(\d{2})\.(\d{2})/,                // 2024.01.15
+    /(\d{2})\.(\d{2})\.(\d{4})/,                // 01.15.2024
+    /(\d{4})(\d{2})(\d{2})/,                    // 20240115
   ];
   
   for (const line of lines) {
@@ -195,16 +198,27 @@ function parseRunningData(text, lines) {
         const dateStr = `${year}-${month}-${day}`;
         const dateObj = new Date(dateStr);
         const now = new Date();
-        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+        const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
         
-        if (dateObj >= thirtyDaysAgo && dateObj <= now) {
+        console.log(`🔍 尝试解析日期：${dateStr} (${line})`);
+        
+        if (dateObj >= ninetyDaysAgo && dateObj <= tomorrow) {
           result.date = dateStr;
           console.log(`✅ 识别到日期：${result.date} (来自：${line})`);
           break;
+        } else {
+          console.log(`❌ 日期不合理：${dateStr} (超出范围)`);
         }
       }
     }
     if (result.date) break;
+  }
+  
+  // 如果未识别到日期，使用当前日期
+  if (!result.date) {
+    result.date = new Date().toISOString().split('T')[0];
+    console.log(`ℹ️  未识别到日期，使用当前日期：${result.date}`);
   }
   
   // 配速/时长/卡路里 - 尝试在同一行匹配
