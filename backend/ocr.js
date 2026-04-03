@@ -177,6 +177,15 @@ function parseRunningData(text, lines) {
     /(\d{4})(\d{2})(\d{2})/,                    // 20240115
   ];
   
+  // 预处理：分离日期和时间（如 2026-4-122:47 -> 2026-4-1 22:47）
+  for (let i = 0; i < lines.length; i++) {
+    const match = lines[i].match(/(\d{4}-\d{1,2}-\d{1,2})(\d{2}:\d{2})/);
+    if (match) {
+      lines[i] = lines[i].replace(match[0], match[1] + ' ' + match[2]);
+      console.log(`🔧 修正日期时间格式：${match[0]} -> ${match[1]} ${match[2]}`);
+    }
+  }
+  
   console.log('\n🔍 开始识别日期，共 ' + lines.length + ' 行文本');
   console.log('前 10 行文本:');
   lines.slice(0, 10).forEach((line, i) => console.log('  [' + i + ']: ' + line));
