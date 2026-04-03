@@ -182,10 +182,12 @@ app.use((req, res, next) => {
 // API: 保存确认后的数据
 app.post('/api/save', async (req, res) => {
   try {
+    console.log('保存请求数据:', req.body);
     const { runner, runDate, distance, pace, duration, calories, rawOcrText, imageFilename, date } = req.body;
     
     // 日期优先使用 OCR 识别的 date 字段，其次使用 runDate
     const finalDate = date || runDate;
+    console.log('最终日期:', finalDate, 'runner:', runner);
     
     if (!runner || !finalDate) {
       return res.status(400).json({ error: '人员和日期必填' });
@@ -216,18 +218,18 @@ app.post('/api/save', async (req, res) => {
     
     // 检查一人一天是否已存在有效记录
     const runs = loadRuns();
-    const existingRun = runs.find(r => r.runner === runner && r.date === runDate && r.isValid);
+    const existingRun = runs.find(r => r.runner === runner && r.date === finalDate && r.isValid);
     if (existingRun) {
       return res.status(400).json({ 
         error: `今日已提交过有效记录`,
-        validationErrors: [`${runner} 在 ${runDate} 已有一条有效记录，无需重复提交`]
+        validationErrors: [`${runner} 在 ${finalDate} 已有一条有效记录，无需重复提交`]
       });
     }
     
     const runRecord = {
       id: uuidv4(),
       runner: runner,
-      date: runDate,
+      date: finalDate,
       distance: distance,
       pace: pace,
       paceMinPerKm: paceMinPerKm,
@@ -614,7 +616,7 @@ app.get('/api/dashboard', (req, res) => {
   }
   
   const currentMonth = new Date().toISOString().substring(0, 7);
-  const thisMonthRuns = filteredValid.filter(r => r.date.startsWith(currentMonth));
+  const thisMonthRuns = filteredValid.filter(r => r.date && r.date.startsWith(currentMonth));
   const thisMonthDistance = thisMonthRuns.reduce((sum, r) => sum + (r.distance || 0), 0);
   
   const today = new Date();
@@ -624,7 +626,7 @@ app.get('/api/dashboard', (req, res) => {
   monday.setDate(today.getDate() - mondayOffset);
   monday.setHours(0, 0, 0, 0);
   
-  const thisWeekRuns = filteredValid.filter(r => new Date(r.date) >= monday);
+  const thisWeekRuns = filteredValid.filter(r => r.date && new Date(r.date) >= monday);
   const thisWeekDistance = thisWeekRuns.reduce((sum, r) => sum + (r.distance || 0), 0);
   const totalCalories = filteredValid.reduce((sum, r) => sum + (r.calories || 0), 0);
   

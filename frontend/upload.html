@@ -411,9 +411,12 @@
     
     initUpload();
     // 点击上传
+    // 点击上传区域
     uploadArea.onclick = function(e) {
-      console.log('Upload area clicked!');
+      e.preventDefault();
+      e.stopPropagation();
       fileInput.click();
+      return false;
     };
     
     fileInput.addEventListener('change', (e) => {
@@ -461,13 +464,16 @@
       result.style.display = 'none';
     }
     
+    // 点击"开始识别"按钮
     uploadBtn.addEventListener('click', async () => {
-      if (!selectedFile || !runner.value) {
-        showResult('error', '请选择图片和人员');
+      if (!selectedFile) {
+        showResult('error', '请选择图片');
         return;
       }
-      
-      // 日期会在 OCR 识别时自动填充，这里不需要验证
+      if (!runner.value) {
+        showResult('error', '请选择人员');
+        return;
+      }
       
       loading.style.display = 'block';
       uploadBtn.disabled = true;
