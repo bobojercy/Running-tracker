@@ -188,31 +188,35 @@ function parseRunningData(text, lines) {
         let year, month, day;
         if (match[0].includes('年')) {
           year = match[1];
-          month = match[2].padStart(2, '0');
-          day = match[3].padStart(2, '0');
+          month = match[2];
+          day = match[3];
         } else if (match[1].length === 4) {
           year = match[1];
-          month = match[2].padStart(2, '0');
-          day = match[3].padStart(2, '0');
+          month = match[2];
+          day = match[3];
         } else {
           // 假设年份为当前年份
           year = new Date().getFullYear().toString();
-          month = match[1].padStart(2, '0');
-          day = match[2].padStart(2, '0');
+          month = match[1];
+          day = match[2];
         }
         
+        // 确保月份和日期是两位数
+        month = month.toString().padStart(2, '0');
+        day = day.toString().padStart(2, '0');
+        
         // 验证日期合理性
-        const dateStr = `${year}-${month}-${day}`;
+        const dateStr = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         const dateObj = new Date(dateStr);
         const now = new Date();
         const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
         const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
         
-        console.log(`🔍 尝试解析日期：${dateStr} (${line})`);
+        console.log(`🔍 尝试解析日期：${dateStr} (来自："${line}")`);
         
         if (dateObj >= ninetyDaysAgo && dateObj <= tomorrow) {
           result.date = dateStr;
-          console.log(`✅ 识别到日期：${result.date} (来自：${line})`);
+          console.log(`✅ 识别到日期：${result.date}`);
           break;
         } else {
           console.log(`❌ 日期不合理：${dateStr} (超出范围)`);
