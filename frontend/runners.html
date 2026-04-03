@@ -163,6 +163,7 @@
       <a href="/"><i class="fas fa-house" style="margin-right:6px;"></i>首页</a>
       <a href="/upload"><i class="fas fa-cloud-arrow-up" style="margin-right:6px;"></i>上传</a>
       <a href="/stats"><i class="fas fa-chart-simple" style="margin-right:6px;"></i>统计</a>
+      <a href="/details"><i class="fas fa-list" style="margin-right:6px;"></i>明细</a>
       <a href="/runners" class="active"><i class="fas fa-users-line" style="margin-right:6px;"></i>人员</a>
     </nav>
     
@@ -193,11 +194,32 @@
             <option value="第四组">第四组</option>
             <option value="第五组">第五组</option>
             <option value="第六组">第六组</option>
+            <option value="欢乐组">欢乐组</option>
+            <option value="梦之队">梦之队</option>
           </select>
         </div>
         <div class="modal-actions">
           <button class="btn-cancel" onclick="hideAddModal()">取消</button>
           <button class="btn-save" onclick="saveNewRunner()">保存</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 编辑人员弹窗 -->
+    <div id="editModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3 style="margin-bottom:20px;color:#333;">✏️ 修改姓名</h3>
+        <div class="form-group">
+          <label>原姓名</label>
+          <input type="text" id="oldRunnerName" readonly style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;background:#f5f5f5;">
+        </div>
+        <div class="form-group">
+          <label>新姓名</label>
+          <input type="text" id="newRunnerNameEdit" placeholder="请输入新姓名" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;">
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="hideEditModal()">取消</button>
+          <button class="btn-save" onclick="saveEditRunner()">保存</button>
         </div>
       </div>
     </div>
@@ -208,7 +230,8 @@
         <div style="text-align:right;margin-bottom:10px;">
           <button class="btn-close" onclick="hideImageModal()">✕ 关闭</button>
         </div>
-        <img id="imagePreview" src="" alt="跑步截图">
+        <div style="text-align:center;color:#999;font-size:0.9em;margin-bottom:10px;" id="imageLoading">加载中...</div>
+        <img id="imagePreview" src="" alt="跑步截图" style="display:none;" onload="document.getElementById('imageLoading').style.display='none';this.style.display='block'">
       </div>
     </div>
     
@@ -272,8 +295,8 @@
     async function loadData() {
       try {
         const [configRes, statsRes] = await Promise.all([
-          fetch('/api/config'),
-          fetch('/api/stats/by-group')
+          fetch('/api/config?t=' + Date.now()),
+          fetch('/api/stats/by-group?t=' + Date.now())
         ]);
         
         config = await configRes.json();
@@ -327,8 +350,11 @@
                 <div class="runner-item">
                   <div>
                     <span class="runner-name">${runner.name}</span>
-                    <button class="btn-detail" onclick="showDetail('${runner.name}', event)">
+                    <button class="btn-detail" onclick="showDetail('${runner.name}', event)" style="margin-left:6px;">
                       <i class="fas fa-list"></i> 明细
+                    </button>
+                    <button class="btn-detail" onclick="showEdit('${runner.name}', event)" style="margin-left:6px;background:linear-gradient(135deg, #f39c12, #e67e22);">
+                      <i class="fas fa-pen"></i> 编辑
                     </button>
                   </div>
                   <div class="runner-group">
@@ -478,6 +504,48 @@
     }
     
     function hideAddModal() { document.getElementById('addModal').style.display = 'none'; }
+    
+    function showEdit(runnerName, event) {
+      if (event) event.stopPropagation();
+      document.getElementById('oldRunnerName').value = runnerName;
+      document.getElementById('newRunnerNameEdit').value = runnerName;
+      document.getElementById('editModal').style.display = 'flex';
+      document.getElementById('newRunnerNameEdit').focus();
+      document.getElementById('newRunnerNameEdit').select();
+    }
+    
+    function hideEditModal() { document.getElementById('editModal').style.display = 'none'; }
+    
+    async function saveEditRunner() {
+      const oldName = document.getElementById('oldRunnerName').value.trim();
+      const newName = document.getElementById('newRunnerNameEdit').value.trim();
+      
+      if (!newName) { alert('请输入新姓名'); return; }
+      if (oldName === newName) { alert('新姓名与原姓名相同'); return; }
+      if (config.runners.find(r => r.name === newName)) { alert('该姓名已存在，请使用其他姓名'); return; }
+      
+      try {
+        const response = await fetch('/api/config/runner', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ runner: oldName, newName: newName, action: 'rename' })
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('✅ 修改成功！');
+          hideEditModal();
+          loadData();
+        } else {
+          alert('修改失败：' + (data.error || '未知错误'));
+        }
+      } catch (error) {
+        alert('修改失败：' + error.message);
+      }
+    }
+    
+    document.getElementById('editModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'editModal') hideEditModal();
+    });
     
     async function saveNewRunner() {
       const name = document.getElementById('newRunnerName').value.trim();

@@ -27,7 +27,16 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, '../frontend')));
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// 图片压缩中间件（锐化处理，减小文件大小）
+const sharp = require('sharp');
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
+  maxAge: '1d', // 缓存 1 天
+  setHeaders: (res, path) => {
+    if (path.endsWith('.jpg') || path.endsWith('.png')) {
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+    }
+  }
+}));
 app.use('/data', express.static(path.join(__dirname, '../data')));
 
 // 确保目录存在
@@ -63,7 +72,7 @@ function saveRuns(runs) {
   fs.writeFileSync(DATA_FILE, JSON.stringify({ runs, updatedAt: new Date().toISOString() }, null, 2));
 }
 
-// 文件上传配置
+// 文件上传配置（带图片压缩）
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadsDir);
@@ -73,6 +82,35 @@ const storage = multer.diskStorage({
     cb(null, `${uuidv4()}${ext}`);
   }
 });
+
+// 图片压缩函数
+async function compressImage(inputPath, outputPath) {
+  try {
+    const metadata = await sharp(inputPath).metadata();
+    const maxSize = 1920; // 最大边长
+    
+    let pipeline = sharp(inputPath);
+    
+    // 如果图片过大，进行缩放
+    if (metadata.width > maxSize || metadata.height > maxSize) {
+      pipeline = pipeline.resize(maxSize, maxSize, {
+        fit: 'inside',
+        withoutEnlargement: true
+      });
+    }
+    
+    // 压缩并保存
+    await pipeline
+      .jpeg({ quality: 80, progressive: true })
+      .toFile(outputPath);
+    
+    console.log(`✅ 图片压缩完成：${path.basename(inputPath)} (${Math.round(metadata.width)}x${Math.round(metadata.height)})`);
+    return true;
+  } catch (error) {
+    console.error('⚠️ 图片压缩失败:', error.message);
+    return false;
+  }
+}
 
 const upload = multer({
   storage,
@@ -100,6 +138,10 @@ app.post('/api/preview', upload.single('screenshot'), async (req, res) => {
       return res.status(400).json({ error: '请选择跑步人员' });
     }
 
+    // 压缩图片
+    const compressedPath = req.file.path.replace(/\.(\w+)$/, '_compressed.$1');
+    await compressImage(req.file.path, compressedPath);
+    
     const ocrResult = await recognizeRunningData(req.file.path);
     const validation = validateRunningData(ocrResult);
     
@@ -114,7 +156,7 @@ app.post('/api/preview', upload.single('screenshot'), async (req, res) => {
         duration: ocrResult.duration,
         calories: ocrResult.calories,
         rawText: ocrResult.rawText,
-        imageFilename: req.file.filename  // 返回图片文件名供保存时使用
+        imageFilename: req.file.filename.replace(/\.(\w+)$/, '_compressed.$1')  // 返回压缩后的文件名
       },
       validation
     });
@@ -217,9 +259,15 @@ app.post('/api/upload', upload.single('screenshot'), async (req, res) => {
       return res.status(400).json({ error: '请选择跑步人员' });
     }
 
+    // 压缩图片（保留原图用于 OCR，压缩图用于展示）
+    const compressedPath = req.file.path.replace(/\.(\w+)$/, '_compressed.$1');
+    await compressImage(req.file.path, compressedPath);
+    
     const ocrResult = await recognizeRunningData(req.file.path);
     const validation = validateRunningData(ocrResult);
     
+    // 使用压缩后的图片 URL
+    const compressedFilename = req.file.filename.replace(/\.(\w+)$/, '_compressed.$1');
     const runRecord = {
       id: uuidv4(),
       runner: runner,
@@ -229,7 +277,7 @@ app.post('/api/upload', upload.single('screenshot'), async (req, res) => {
       paceMinPerKm: ocrResult.paceMinPerKm,
       duration: ocrResult.duration,
       calories: ocrResult.calories,
-      imageUrl: `/uploads/${req.file.filename}`,
+      imageUrl: `/uploads/${compressedFilename}`,
       isValid: validation.isValid,
       validationErrors: validation.errors,
       rawOcrText: ocrResult.rawText,
@@ -453,16 +501,15 @@ app.get('/api/config', (req, res) => {
 
 // API: 更新人员组别或新增人员
 app.post('/api/config/runner', (req, res) => {
-  const { runner, group, action } = req.body;
-  
-  if (!runner || !group) {
-    return res.status(400).json({ error: '人员和组别必填' });
-  }
+  const { runner, group, action, newName } = req.body;
   
   const config = getConfig();
   
   // 新增人员
   if (action === 'add') {
+    if (!runner || !group) {
+      return res.status(400).json({ error: '人员和组别必填' });
+    }
     const exists = config.runners.find(r => r.name === runner);
     if (exists) {
       return res.status(400).json({ error: '该人员已存在' });
@@ -473,7 +520,45 @@ app.post('/api/config/runner', (req, res) => {
     return res.json({ success: true });
   }
   
+  // 修改人员姓名
+  if (action === 'rename') {
+    if (!runner || !newName) {
+      return res.status(400).json({ error: '原姓名和新姓名必填' });
+    }
+    
+    const exists = config.runners.find(r => r.name === newName);
+    if (exists) {
+      return res.status(400).json({ error: '该姓名已存在' });
+    }
+    
+    const runnerObj = config.runners.find(r => r.name === runner);
+    if (!runnerObj) {
+      return res.status(404).json({ error: '人员不存在' });
+    }
+    
+    // 更新配置中的人员姓名
+    runnerObj.name = newName;
+    
+    // 更新跑步记录中的人员姓名
+    const runsData = loadRuns();
+    runsData.forEach(run => {
+      if (run.runner === runner) {
+        run.runner = newName;
+      }
+    });
+    
+    // 保存配置和跑步数据
+    saveConfig(config);
+    saveRuns(runsData);
+    
+    return res.json({ success: true });
+  }
+  
   // 更新组别
+  if (!runner || !group) {
+    return res.status(400).json({ error: '人员和组别必填' });
+  }
+  
   const runnerObj = config.runners.find(r => r.name === runner);
   if (runnerObj) {
     runnerObj.group = group;
@@ -565,6 +650,7 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../frontend/index.
 app.get('/upload', (req, res) => res.sendFile(path.join(__dirname, '../frontend/upload.html')));
 app.get('/stats', (req, res) => res.sendFile(path.join(__dirname, '../frontend/stats.html')));
 app.get('/runners', (req, res) => res.sendFile(path.join(__dirname, '../frontend/runners.html')));
+app.get('/details', (req, res) => res.sendFile(path.join(__dirname, '../frontend/details.html')));
 
 // 获取本机 IP
 function getLocalIP() {
