@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>跑步统计 - 轻跑如风</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 15px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+    header h1 { font-size: 1.6em; margin-bottom: 8px; }
+    header p { opacity: 0.9; font-size: 0.95em; }
+    
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .nav a {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      font-size: 0.95em;
+    }
+    .nav a:active { background: rgba(255,255,255,0.4); }
+    .nav a.active { background: white; color: #667eea; }
+    
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9em;
+    }
+    .tab:active { background: rgba(255,255,255,0.4); }
+    .tab.active { background: white; color: #667eea; }
+    
+    .stats-container {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    
+    .total-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #eee;
+    }
+    .total-stat { text-align: center; }
+    .total-stat-value { font-size: 1.5em; font-weight: bold; color: #667eea; }
+    .total-stat-label { color: #666; margin-top: 4px; font-size: 0.8em; }
+    
+    .section { margin-bottom: 25px; }
+    .section h2 { color: #333; margin-bottom: 15px; font-size: 1.15em; }
+    
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9em;
+    }
+    .stats-table th, .stats-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .stats-table th { background: rgba(102,126,234,0.1); color: #667eea; font-weight: 600; }
+    .stats-table tr:active { background: rgba(102,126,234,0.05); }
+    .stats-table .num { text-align: right; }
+    .stats-table .rank { width: 40px; text-align: center; }
+    .rank-1 { color: #ffd700; }
+    .rank-2 { color: #c0c0c0; }
+    .rank-3 { color: #cd7f32; }
+    
+    .bar {
+      height: 6px;
+      background: #eee;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 3px;
+      transition: width 0.5s;
+    }
+    
+    .loading { text-align: center; padding: 30px; color: #666; }
+    .empty { text-align: center; padding: 30px; color: #999; }
+    
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    
+    /* 移动端适配 */
+    @media (max-width: 480px) {
+      body { padding: 10px; }
+      header h1 { font-size: 1.4em; }
+      .stats-container { padding: 15px; }
+      .total-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .total-stat-value { font-size: 1.3em; }
+      .nav a { padding: 8px 16px; font-size: 0.9em; }
+      .tab { padding: 8px 16px; font-size: 0.85em; }
+      .stats-table { font-size: 0.8em; }
+      .stats-table th, .stats-table td { padding: 8px 6px; }
+      .section h2 { font-size: 1.05em; }
+      
+      /* 移动端表格滚动 */
+      .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-chart-simple" style="color:#fff;"></i> 跑步统计</h1>
+      <p>多维度跑量分析</p>
+    </header>
+    
+    <nav class="nav">
+      <a href="/"><i class="fas fa-house" style="margin-right:6px;"></i>首页</a>
+      <a href="/upload"><i class="fas fa-cloud-arrow-up" style="margin-right:6px;"></i>上传</a>
+      <a href="/stats" class="active"><i class="fas fa-chart-simple" style="margin-right:6px;"></i>统计</a>
+      <a href="/details"><i class="fas fa-list" style="margin-right:6px;"></i>明细</a>
+      <a href="/runners"><i class="fas fa-users-line" style="margin-right:6px;"></i>人员</a>
+    </nav>
+    
+    <style>
+      .nav a i { color: rgba(255,255,255,0.9); transition:transform 0.3s; }
+      .nav a:hover i { color: #fff; transform:scale(1.1); }
+      .nav a.active i { color: #667eea; }
+    </style>
+    
+    <div style="text-align:center;margin-bottom:15px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <select id="groupFilter" onchange="onGroupChange()" style="padding:8px 15px;border-radius:20px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.9);font-size:0.95em;min-width:120px;">
+        <option value="">全部组别</option>
+      </select>
+      <select id="runnerFilter" onchange="loadData()" style="padding:8px 15px;border-radius:20px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.9);font-size:0.95em;min-width:120px;">
+        <option value="">全部人员</option>
+      </select>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('total')">🏆 总览</button>
+      <button class="tab" onclick="switchTab('group')">🏅 组别排名</button>
+      <button class="tab" onclick="switchTab('ranking')">👥 人员排名</button>
+      <button class="tab" onclick="switchTab('monthly')">📅 月度</button>
+      <button class="tab" onclick="switchTab('daily')">📋 每日</button>
+    </div>
+    
+    <div class="stats-container">
+      <div id="loading" class="loading">加载中...</div>
+      
+      <!-- 总览 -->
+      <div id="total" class="tab-content">
+        <div class="total-stats" id="totalStats"></div>
+      </div>
+      
+      <!-- 组别排名 -->
+      <div id="group" class="tab-content">
+        <div class="section">
+          <h2>🏅 组别跑量排名</h2>
+          <div class="table-wrapper">
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th class="rank">#</th>
+                  <th>组别</th>
+                  <th class="num">总人数</th>
+                  <th class="num">跑步次数</th>
+                  <th class="num">总距离 (km)</th>
+                  <th class="num">卡路里</th>
+                  <th>进度</th>
+                </tr>
+              </thead>
+              <tbody id="groupBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 人员排名 -->
+      <div id="ranking" class="tab-content">
+        <div class="section">
+          <h2>👥 人员跑量排名</h2>
+          <div class="table-wrapper">
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th class="rank">#</th>
+                  <th>人员</th>
+                  <th class="num">跑步次数</th>
+                  <th class="num">总距离 (km)</th>
+                  <th class="num">平均配速</th>
+                  <th class="num">卡路里</th>
+                  <th>进度</th>
+                </tr>
+              </thead>
+              <tbody id="rankingBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 月度 -->
+      <div id="monthly" class="tab-content">
+        <div class="section">
+          <h2>📅 月度跑量排名</h2>
+          <div class="table-wrapper">
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th class="rank">#</th>
+                  <th>月份</th>
+                  <th class="num">次数</th>
+                  <th class="num">距离 (km)</th>
+                  <th class="num">卡路里</th>
+                  <th>进度</th>
+                </tr>
+              </thead>
+              <tbody id="monthlyBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 每日 -->
+      <div id="daily" class="tab-content">
+        <div class="section">
+          <h2>📋 每日跑量排名 (Top 30)</h2>
+          <div class="table-wrapper">
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th class="rank">#</th>
+                  <th>日期</th>
+                  <th class="num">次数</th>
+                  <th class="num">距离 (km)</th>
+                  <th class="num">卡路里</th>
+                  <th>进度</th>
+                </tr>
+              </thead>
+              <tbody id="dailyBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let allData = {};
+    let config = null;
+    
+    // 初始化
+    async function initStats() {
+      try {
+        const configRes = await fetch('/api/config?t=' + Date.now());
+        config = await configRes.json();
+        
+        // 填充组别下拉框
+        const groupFilter = document.getElementById('groupFilter');
+        groupFilter.innerHTML = '<option value="">全部组别</option>';
+        config.groups.forEach(g => {
+          const option = document.createElement('option');
+          option.value = g;
+          option.textContent = g;
+          groupFilter.appendChild(option);
+        });
+        
+        updateRunnerOptions();
+        loadData();
+      } catch (error) {
+        console.error('初始化失败:', error);
+        loadData();
+      }
+    }
+    
+    // 组别变化时更新人员选项
+    function onGroupChange() {
+      updateRunnerOptions();
+      loadData();
+    }
+    
+    // 更新人员下拉框选项
+    function updateRunnerOptions() {
+      const group = document.getElementById('groupFilter').value;
+      const runnerSelect = document.getElementById('runnerFilter');
+      const currentRunner = runnerSelect.value;
+      
+      runnerSelect.innerHTML = '<option value="">全部人员</option>';
+      
+      let runners = config.runners;
+      if (group) {
+        runners = runners.filter(r => r.group === group);
+      }
+      runners.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+      runners.forEach(r => {
+        const option = document.createElement('option');
+        option.value = r.name;
+        option.textContent = r.name;
+        runnerSelect.appendChild(option);
+      });
+      
+      if (runners.find(r => r.name === currentRunner)) {
+        runnerSelect.value = currentRunner;
+      }
+    }
+    
+    async function loadData() {
+      try {
+        const group = document.getElementById('groupFilter').value;
+        const runner = document.getElementById('runnerFilter').value;
+        
+        // 构建查询参数
+        const params = new URLSearchParams();
+        if (group) params.append('group', group);
+        if (runner) params.append('runner', runner);
+        const query = params.toString() ? '?' + params.toString() : '';
+        
+        const [totalRes, monthlyRes, dailyRes, rankingRes, groupRes] = await Promise.all([
+          fetch('/api/stats/total' + query),
+          fetch('/api/stats/monthly' + query),
+          fetch('/api/stats/daily?limit=30' + query),
+          fetch('/api/stats/by-runner' + query),
+          fetch('/api/stats/by-group' + query)
+        ]);
+        
+        allData.total = await totalRes.json();
+        allData.monthly = await monthlyRes.json();
+        allData.daily = await dailyRes.json();
+        allData.ranking = await rankingRes.json();
+        allData.group = await groupRes.json();
+        
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('total').classList.add('active');
+        renderTotal();
+        renderGroup();
+        renderRanking();
+        renderMonthly();
+        renderDaily();
+        
+      } catch (error) {
+        console.error('加载失败:', error);
+        document.getElementById('loading').innerHTML = '加载失败，请刷新重试';
+      }
+    }
+    
+    function renderTotal() {
+      const t = allData.total.total;
+      if (!t || t.totalRuns === 0) {
+        document.getElementById('totalStats').innerHTML = 
+          '<div class="empty">暂无有效跑步记录</div>';
+        return;
+      }
+      
+      document.getElementById('totalStats').innerHTML = `
+        <div class="total-stat">
+          <div class="total-stat-value">${t.totalRuns}</div>
+          <div class="total-stat-label">总跑步次数</div>
+        </div>
+        <div class="total-stat">
+          <div class="total-stat-value">${t.totalDistance.toFixed(2)}</div>
+          <div class="total-stat-label">总跑量 (km)</div>
+        </div>
+        <div class="total-stat">
+          <div class="total-stat-value">${t.totalCalories}</div>
+          <div class="total-stat-label">总卡路里</div>
+        </div>
+        <div class="total-stat">
+          <div class="total-stat-value">${t.avgDistance.toFixed(2)}</div>
+          <div class="total-stat-label">平均距离 (km)</div>
+        </div>
+        <div class="total-stat">
+          <div class="total-stat-value">${formatPace(t.avgPace)}</div>
+          <div class="total-stat-label">平均配速</div>
+        </div>
+        <div class="total-stat">
+          <div class="total-stat-value">${t.bestDistance.toFixed(2)}</div>
+          <div class="total-stat-label">单次最远</div>
+          <div style="font-size:0.8em;color:#999;margin-top:5px">${t.bestDate || '-'}</div>
+        </div>
+      `;
+    }
+    
+    function renderGroup() {
+      const stats = allData.group.groups || [];
+      const tbody = document.getElementById('groupBody');
+      
+      if (stats.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">暂无数据</td></tr>';
+        return;
+      }
+      
+      const maxDist = Math.max(...stats.map(s => s.totalDistance));
+      
+      // 获取配置来计算每组人数
+      fetch('/api/config').then(r => r.json()).then(config => {
+        stats.forEach(g => {
+          const runnerCount = config.runners.filter(r => r.group === g.group).length;
+          g.runnerCount = runnerCount;
+        });
+        
+        tbody.innerHTML = stats.map((g, i) => `
+          <tr>
+            <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
+            <td><strong>${g.group}</strong></td>
+            <td class="num">${g.runnerCount || '-'}</td>
+            <td class="num">${g.totalRuns}</td>
+            <td class="num">${g.totalDistance.toFixed(2)}</td>
+            <td class="num">${g.totalCalories}</td>
+            <td style="width:150px">
+              <div class="bar">
+                <div class="bar-fill" style="width:${(g.totalDistance / maxDist * 100).toFixed(1)}%"></div>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }).catch(() => {
+        tbody.innerHTML = stats.map((g, i) => `
+          <tr>
+            <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
+            <td><strong>${g.group}</strong></td>
+            <td class="num">-</td>
+            <td class="num">${g.totalRuns}</td>
+            <td class="num">${g.totalDistance.toFixed(2)}</td>
+            <td class="num">${g.totalCalories}</td>
+            <td style="width:150px">
+              <div class="bar">
+                <div class="bar-fill" style="width:${(g.totalDistance / maxDist * 100).toFixed(1)}%"></div>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      });
+    }
+    
+    function renderRanking() {
+      const stats = allData.ranking.stats || [];
+      const tbody = document.getElementById('rankingBody');
+      
+      if (stats.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">暂无数据</td></tr>';
+        return;
+      }
+      
+      const maxDist = Math.max(...stats.map(s => s.distance));
+      
+      tbody.innerHTML = stats.map((s, i) => `
+        <tr>
+          <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
+          <td><strong>${s.runner}</strong></td>
+          <td class="num">${s.runs}</td>
+          <td class="num">${s.distance.toFixed(2)}</td>
+          <td class="num">${formatPace(s.avgPace)}</td>
+          <td class="num">${s.calories}</td>
+          <td style="width:150px">
+            <div class="bar">
+              <div class="bar-fill" style="width:${(s.distance / maxDist * 100).toFixed(1)}%"></div>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    function renderMonthly() {
+      const stats = allData.monthly.stats || [];
+      const tbody = document.getElementById('monthlyBody');
+      
+      if (stats.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty">暂无数据</td></tr>';
+        return;
+      }
+      
+      const maxDist = Math.max(...stats.map(s => s.distance));
+      
+      tbody.innerHTML = stats.map((s, i) => `
+        <tr>
+          <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
+          <td>${s.month}</td>
+          <td class="num">${s.runs}</td>
+          <td class="num">${s.distance.toFixed(2)}</td>
+          <td class="num">${s.calories}</td>
+          <td style="width:150px">
+            <div class="bar">
+              <div class="bar-fill" style="width:${(s.distance / maxDist * 100).toFixed(1)}%"></div>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    function renderDaily() {
+      const stats = allData.daily.stats || [];
+      const tbody = document.getElementById('dailyBody');
+      
+      if (stats.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty">暂无数据</td></tr>';
+        return;
+      }
+      
+      const maxDist = Math.max(...stats.map(s => s.distance));
+      
+      tbody.innerHTML = stats.map((s, i) => `
+        <tr>
+          <td class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</td>
+          <td>${s.date}</td>
+          <td class="num">${s.runs}</td>
+          <td class="num">${s.distance.toFixed(2)}</td>
+          <td class="num">${s.calories}</td>
+          <td style="width:150px">
+            <div class="bar">
+              <div class="bar-fill" style="width:${(s.distance / maxDist * 100).toFixed(1)}%"></div>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    }
+    
+    function formatPace(minPerKm) {
+      if (!minPerKm) return '-';
+      const min = Math.floor(minPerKm);
+      const sec = Math.round((minPerKm - min) * 60);
+      return `${min}'${sec.toString().padStart(2, '0')}"`;
+    }
+    
+    initStats();
+  </script>
+</body>
+</html>

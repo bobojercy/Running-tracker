@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人员管理 - 轻跑如风</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 15px;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    
+    header { text-align: center; color: white; margin-bottom: 20px; }
+    header h1 { font-size: 1.8em; margin-bottom: 8px; }
+    header p { opacity: 0.9; font-size: 0.95em; }
+    
+    .nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .nav a {
+      background: rgba(255,255,255,0.2); color: white; padding: 10px 20px;
+      border-radius: 25px; text-decoration: none; transition: all 0.3s;
+      backdrop-filter: blur(10px); font-size: 0.95em;
+    }
+    .nav a:active { background: rgba(255,255,255,0.4); }
+    .nav a.active { background: white; color: #667eea; }
+    
+    .card {
+      background: rgba(255,255,255,0.95); border-radius: 12px; padding: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15); margin-bottom: 20px;
+    }
+    
+    .group-section {
+      background: #f8f9fa; border-radius: 12px; padding: 20px; margin-bottom: 15px;
+    }
+    
+    .group-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 15px;
+      padding-bottom: 10px; border-bottom: 2px solid #e0e0e0;
+      cursor: pointer; user-select: none; transition: all 0.3s;
+    }
+    .group-header:hover { background: rgba(102,126,234,0.05); }
+    .group-header .toggle-icon { transition: transform 0.3s; font-size: 0.9em; }
+    .group-header.collapsed .toggle-icon { transform: rotate(-90deg); }
+    .group-runners.collapsed { display: none; }
+    
+    .group-runners { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+    
+    .runner-item {
+      background: #f8f9fa; border-radius: 10px; padding: 15px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-left: 4px solid #667eea; transition: all 0.3s;
+    }
+    .runner-item:hover { box-shadow: 0 4px 15px rgba(102,126,234,0.2); transform: translateX(3px); }
+    
+    .runner-name { font-weight: 600; color: #333; font-size: 1.1em; }
+    
+    .btn-detail {
+      background: linear-gradient(135deg, #667eea, #764ba2); color: white;
+      border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer;
+      font-size: 0.85em; transition: all 0.3s; display: inline-flex;
+      align-items: center; gap: 6px; margin-left: 10px;
+    }
+    .btn-detail:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+    
+    .runner-group { display: flex; align-items: center; gap: 10px; }
+    .runner-group select { padding: 6px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9em; background: white; }
+    .group-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: 600; background: #667eea; color: white; }
+    
+    .stats-preview { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white; padding: 15px; border-radius: 10px; text-align: center;
+    }
+    .stat-value { font-size: 1.8em; font-weight: bold; margin-bottom: 5px; }
+    .stat-label { font-size: 0.85em; opacity: 0.9; }
+    
+    .loading { text-align: center; padding: 40px; color: #666; }
+    
+    .btn-add {
+      background: linear-gradient(135deg, #667eea, #764ba2); color: white;
+      border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;
+      font-size: 0.95em; transition: all 0.3s;
+    }
+    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+    
+    .modal {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5); display: flex;
+      align-items: center; justify-content: center; z-index: 1000;
+    }
+    .modal-content {
+      background: white; border-radius: 15px; padding: 25px;
+      width: 90%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    
+    .detail-modal-content { max-width: 800px; max-height: 80vh; overflow-y: auto; }
+    
+    #imageModal { z-index: 2000; }
+    .image-modal-content { max-width: 90vw; max-height: 90vh; padding: 10px; }
+    .image-modal-content img { max-width: 100%; max-height: 85vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    
+    .detail-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;
+    }
+    .detail-title { font-size: 1.4em; font-weight: 700; color: #333; }
+    
+    .detail-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
+      margin-bottom: 20px; padding: 15px;
+      background: linear-gradient(135deg, #667eea15, #764ba215); border-radius: 12px;
+    }
+    .detail-stat { text-align: center; }
+    .detail-stat-value { font-size: 1.5em; font-weight: 800; color: #667eea; }
+    .detail-stat-label { font-size: 0.8em; color: #666; margin-top: 4px; }
+    
+    .detail-table { width: 100%; border-collapse: collapse; }
+    .detail-table th {
+      background: #f8f9fa; padding: 12px 8px; text-align: left;
+      font-weight: 600; color: #333; font-size: 0.9em; border-bottom: 2px solid #e0e0e0;
+    }
+    .detail-table td { padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 0.9em; }
+    .detail-table tr:hover { background: #f8f9fa; }
+    .detail-table .num { text-align: right; font-family: 'SF Mono', Monaco, monospace; }
+    .detail-empty { text-align: center; padding: 40px; color: #999; }
+    
+    .btn-close {
+      background: #f0f0f0; color: #666; border: none; padding: 8px 16px;
+      border-radius: 8px; cursor: pointer; font-size: 0.9em; transition: all 0.3s;
+    }
+    .btn-close:hover { background: #e0e0e0; }
+    
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
+    .modal-actions { display: flex; gap: 15px; margin-top: 25px; }
+    .btn-cancel, .btn-save {
+      flex: 1; padding: 12px; border: none; border-radius: 8px;
+      font-size: 1em; cursor: pointer; transition: all 0.3s;
+    }
+    .btn-cancel { background: #f0f0f0; color: #666; }
+    .btn-save { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+    
+    @media (max-width: 480px) {
+      .runner-item { flex-direction: column; gap: 10px; text-align: center; }
+      .runner-group { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-users-line" style="color:#fff;"></i> 人员管理</h1>
+      <p>分配组别 · 查看统计</p>
+    </header>
+    
+    <nav class="nav">
+      <a href="/"><i class="fas fa-house" style="margin-right:6px;"></i>首页</a>
+      <a href="/upload"><i class="fas fa-cloud-arrow-up" style="margin-right:6px;"></i>上传</a>
+      <a href="/stats"><i class="fas fa-chart-simple" style="margin-right:6px;"></i>统计</a>
+      <a href="/details"><i class="fas fa-list" style="margin-right:6px;"></i>明细</a>
+      <a href="/runners" class="active"><i class="fas fa-users-line" style="margin-right:6px;"></i>人员</a>
+    </nav>
+    
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+        <h2 style="color:#333;">📋 人员列表</h2>
+        <button class="btn-add" onclick="showAddRunner()">➕ 新增人员</button>
+      </div>
+      <div class="runner-list" id="runnerList">
+        <div class="loading">加载中...</div>
+      </div>
+    </div>
+    
+    <!-- 新增人员弹窗 -->
+    <div id="addModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3 style="margin-bottom:20px;color:#333;">➕ 新增人员</h3>
+        <div class="form-group">
+          <label>姓名</label>
+          <input type="text" id="newRunnerName" placeholder="请输入姓名" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;">
+        </div>
+        <div class="form-group">
+          <label>组别</label>
+          <select id="newRunnerGroup" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;">
+            <option value="第一组">第一组</option>
+            <option value="第二组">第二组</option>
+            <option value="第三组">第三组</option>
+            <option value="第四组">第四组</option>
+            <option value="第五组">第五组</option>
+            <option value="第六组">第六组</option>
+            <option value="欢乐组">欢乐组</option>
+            <option value="梦之队">梦之队</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="hideAddModal()">取消</button>
+          <button class="btn-save" onclick="saveNewRunner()">保存</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 编辑人员弹窗 -->
+    <div id="editModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3 style="margin-bottom:20px;color:#333;">✏️ 修改姓名</h3>
+        <div class="form-group">
+          <label>原姓名</label>
+          <input type="text" id="oldRunnerName" readonly style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;background:#f5f5f5;">
+        </div>
+        <div class="form-group">
+          <label>新姓名</label>
+          <input type="text" id="newRunnerNameEdit" placeholder="请输入新姓名" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;">
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="hideEditModal()">取消</button>
+          <button class="btn-save" onclick="saveEditRunner()">保存</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 图片查看弹窗 -->
+    <div id="imageModal" class="modal" style="display:none;">
+      <div class="modal-content image-modal-content">
+        <div style="text-align:right;margin-bottom:10px;">
+          <button class="btn-close" onclick="hideImageModal()">✕ 关闭</button>
+        </div>
+        <div style="text-align:center;color:#999;font-size:0.9em;margin-bottom:10px;" id="imageLoading">加载中...</div>
+        <img id="imagePreview" src="" alt="跑步截图" style="display:none;" onload="document.getElementById('imageLoading').style.display='none';this.style.display='block'">
+      </div>
+    </div>
+    
+    <!-- 跑步明细弹窗 -->
+    <div id="detailModal" class="modal" style="display:none;">
+      <div class="modal-content detail-modal-content">
+        <div class="detail-header">
+          <span class="detail-title" id="detailRunnerName">🏃 跑步明细</span>
+          <button class="btn-close" onclick="hideDetailModal()">✕ 关闭</button>
+        </div>
+        <div class="detail-stats" id="detailStats">
+          <div class="detail-stat">
+            <div class="detail-stat-value" id="detailTotalRuns">0</div>
+            <div class="detail-stat-label">跑步次数</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-value" id="detailTotalDist">0</div>
+            <div class="detail-stat-label">总跑量 (km)</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-value" id="detailAvgPace">-</div>
+            <div class="detail-stat-label">平均配速</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-value" id="detailTotalCal">0</div>
+            <div class="detail-stat-label">总卡路里</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th class="num">距离 (km)</th>
+                <th class="num">配速</th>
+                <th class="num">用时</th>
+                <th class="num">卡路里</th>
+                <th class="num">截图</th>
+              </tr>
+            </thead>
+            <tbody id="detailTableBody">
+              <tr><td colspan="6" class="detail-empty">加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2 style="margin-bottom:15px;color:#333;">📊 组别统计</h2>
+      <div class="stats-grid" id="groupStats">
+        <div class="loading">加载中...</div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let config = null;
+    let groupStats = null;
+    
+    async function loadData() {
+      try {
+        const [configRes, statsRes] = await Promise.all([
+          fetch('/api/config?t=' + Date.now()),
+          fetch('/api/stats/by-group?t=' + Date.now())
+        ]);
+        
+        config = await configRes.json();
+        groupStats = await statsRes.json();
+        
+        renderRunners();
+        renderGroupStats();
+        
+      } catch (error) {
+        console.error('加载失败:', error);
+        document.getElementById('runnerList').innerHTML = '<div class="loading">加载失败，请刷新重试</div>';
+      }
+    }
+    
+    function renderRunners() {
+      const list = document.getElementById('runnerList');
+      
+      if (!config || !config.runners || config.runners.length === 0) {
+        list.innerHTML = '<div class="loading">暂无人员数据</div>';
+        return;
+      }
+      
+      const runnersByGroup = {};
+      config.groups.forEach(g => { runnersByGroup[g] = []; });
+      
+      config.runners.forEach(runner => {
+        const group = runner.group || '未分配';
+        if (!runnersByGroup[group]) runnersByGroup[group] = [];
+        runnersByGroup[group].push(runner);
+      });
+      
+      Object.values(runnersByGroup).forEach(runners => {
+        runners.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'zh-CN'));
+      });
+      
+      list.innerHTML = config.groups.map((group, index) => {
+        const runners = runnersByGroup[group] || [];
+        if (runners.length === 0) return '';
+        
+        const isCollapsed = index > 0 ? 'collapsed' : '';
+        
+        return `
+          <div class="group-section">
+            <div class="group-header ${isCollapsed}" onclick="toggleGroup('${group}')">
+              <span class="toggle-icon">▼</span>
+              <span class="group-title">${group}</span>
+              <span class="group-count">${runners.length}人</span>
+            </div>
+            <div class="group-runners ${isCollapsed}" id="group-${group}">
+              ${runners.map(runner => `
+                <div class="runner-item">
+                  <div>
+                    <span class="runner-name">${runner.name}</span>
+                    <button class="btn-detail" onclick="showDetail('${runner.name}', event)" style="margin-left:6px;">
+                      <i class="fas fa-list"></i> 明细
+                    </button>
+                    <button class="btn-detail" onclick="showEdit('${runner.name}', event)" style="margin-left:6px;background:linear-gradient(135deg, #f39c12, #e67e22);">
+                      <i class="fas fa-pen"></i> 编辑
+                    </button>
+                  </div>
+                  <div class="runner-group">
+                    <span class="group-badge">${runner.group || '未分配'}</span>
+                    <select onchange="updateGroup('${runner.name}', this.value)" onclick="if(event) event.stopPropagation()">
+                      ${config.groups.map(g => `<option value="${g}" ${runner.group === g ? 'selected' : ''}>${g}</option>`).join('')}
+                    </select>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    function renderGroupStats() {
+      const grid = document.getElementById('groupStats');
+      if (!groupStats || !groupStats.groups || groupStats.groups.length === 0) {
+        grid.innerHTML = '<div class="loading">暂无统计数据</div>';
+        return;
+      }
+      grid.innerHTML = groupStats.groups.map(g => `
+        <div class="stat-card">
+          <div class="stat-value">${g.totalRuns}</div>
+          <div class="stat-label">${g.group}</div>
+          <div style="font-size:0.9em;margin-top:8px;opacity:0.9">${g.totalDistance.toFixed(1)} km</div>
+          <div style="font-size:0.8em;opacity:0.8">${g.totalCalories} 卡</div>
+        </div>
+      `).join('');
+    }
+    
+    async function updateGroup(runnerName, newGroup) {
+      try {
+        const response = await fetch('/api/config/runner', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ runner: runnerName, group: newGroup })
+        });
+        const data = await response.json();
+        if (data.success) {
+          const runner = config.runners.find(r => r.name === runnerName);
+          if (runner) runner.group = newGroup;
+          const statsRes = await fetch('/api/stats/by-group');
+          groupStats = await statsRes.json();
+          renderGroupStats();
+        } else {
+          alert('更新失败：' + (data.error || '未知错误'));
+          loadData();
+        }
+      } catch (error) {
+        alert('更新失败：' + error.message);
+        loadData();
+      }
+    }
+    
+    function toggleGroup(groupName) {
+      const header = event.currentTarget;
+      const content = document.getElementById('group-' + groupName);
+      if (content && content.classList.contains('collapsed')) {
+        content.classList.remove('collapsed');
+        header.classList.remove('collapsed');
+      } else if (content) {
+        content.classList.add('collapsed');
+        header.classList.add('collapsed');
+      }
+    }
+    
+    function showDetail(runnerName, event) {
+      if (event) event.stopPropagation();
+      document.getElementById('detailRunnerName').textContent = '🏃 ' + runnerName + ' · 跑步明细';
+      document.getElementById('detailModal').style.display = 'flex';
+      document.getElementById('detailTableBody').innerHTML = '<tr><td colspan="6" class="detail-empty">加载中...</td></tr>';
+      
+      fetch('/api/runs?runner=' + encodeURIComponent(runnerName))
+        .then(r => r.json())
+        .then(data => {
+          const runs = data.runs || [];
+          const totalRuns = runs.length;
+          const totalDist = runs.reduce((sum, r) => sum + (r.distance || 0), 0);
+          const totalCal = runs.reduce((sum, r) => sum + (r.calories || 0), 0);
+          
+          let avgPace = '-';
+          if (totalRuns > 0) {
+            const totalMinutes = runs.reduce((sum, r) => {
+              const duration = r.duration || '00:00:00';
+              const parts = duration.split(':').map(Number);
+              return sum + parts[0] * 60 + parts[1] + (parts[2] || 0) / 60;
+            }, 0);
+            const paceMinPerKm = totalDist > 0 ? totalMinutes / totalDist : 0;
+            const min = Math.floor(paceMinPerKm);
+            const sec = Math.round((paceMinPerKm - min) * 60);
+            avgPace = min + "'" + sec.toString().padStart(2, '0') + '"';
+          }
+          
+          document.getElementById('detailTotalRuns').textContent = totalRuns;
+          document.getElementById('detailTotalDist').textContent = totalDist.toFixed(2);
+          document.getElementById('detailAvgPace').textContent = avgPace;
+          document.getElementById('detailTotalCal').textContent = totalCal;
+          
+          if (runs.length === 0) {
+            document.getElementById('detailTableBody').innerHTML = '<tr><td colspan="6" class="detail-empty">暂无跑步记录</td></tr>';
+          } else {
+            runs.sort((a, b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('detailTableBody').innerHTML = runs.map(run => `
+              <tr>
+                <td>${run.date}</td>
+                <td class="num">${run.distance?.toFixed(2) || '-'}</td>
+                <td class="num">${run.pace || '-'}</td>
+                <td class="num">${run.duration || '-'}</td>
+                <td class="num">${run.calories || '-'}</td>
+                <td class="num">${run.imageUrl ? `<button class="btn-detail" onclick="viewImage('${run.imageUrl}')"><i class="fas fa-image"></i> 查看</button>` : '-'}</td>
+              </tr>
+            `).join('');
+          }
+        })
+        .catch(error => {
+          console.error('加载明细失败:', error);
+          document.getElementById('detailTableBody').innerHTML = '<tr><td colspan="6" class="detail-empty">加载失败</td></tr>';
+        });
+    }
+    
+    function hideDetailModal() { document.getElementById('detailModal').style.display = 'none'; }
+    
+    function viewImage(imageUrl) {
+      document.getElementById('imagePreview').src = imageUrl;
+      document.getElementById('imageModal').style.display = 'flex';
+    }
+    
+    function hideImageModal() {
+      document.getElementById('imageModal').style.display = 'none';
+      document.getElementById('imagePreview').src = '';
+    }
+    
+    document.getElementById('imageModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'imageModal') hideImageModal();
+    });
+    
+    document.getElementById('detailModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'detailModal') hideDetailModal();
+    });
+    
+    function showAddRunner() {
+      document.getElementById('addModal').style.display = 'flex';
+      document.getElementById('newRunnerName').value = '';
+      document.getElementById('newRunnerName').focus();
+    }
+    
+    function hideAddModal() { document.getElementById('addModal').style.display = 'none'; }
+    
+    function showEdit(runnerName, event) {
+      if (event) event.stopPropagation();
+      document.getElementById('oldRunnerName').value = runnerName;
+      document.getElementById('newRunnerNameEdit').value = runnerName;
+      document.getElementById('editModal').style.display = 'flex';
+      document.getElementById('newRunnerNameEdit').focus();
+      document.getElementById('newRunnerNameEdit').select();
+    }
+    
+    function hideEditModal() { document.getElementById('editModal').style.display = 'none'; }
+    
+    async function saveEditRunner() {
+      const oldName = document.getElementById('oldRunnerName').value.trim();
+      const newName = document.getElementById('newRunnerNameEdit').value.trim();
+      
+      if (!newName) { alert('请输入新姓名'); return; }
+      if (oldName === newName) { alert('新姓名与原姓名相同'); return; }
+      if (config.runners.find(r => r.name === newName)) { alert('该姓名已存在，请使用其他姓名'); return; }
+      
+      try {
+        const response = await fetch('/api/config/runner', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ runner: oldName, newName: newName, action: 'rename' })
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('✅ 修改成功！');
+          hideEditModal();
+          loadData();
+        } else {
+          alert('修改失败：' + (data.error || '未知错误'));
+        }
+      } catch (error) {
+        alert('修改失败：' + error.message);
+      }
+    }
+    
+    document.getElementById('editModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'editModal') hideEditModal();
+    });
+    
+    async function saveNewRunner() {
+      const name = document.getElementById('newRunnerName').value.trim();
+      const group = document.getElementById('newRunnerGroup').value;
+      
+      if (!name) { alert('请输入姓名'); return; }
+      if (config.runners.find(r => r.name === name)) { alert('该人员已存在'); return; }
+      
+      try {
+        const response = await fetch('/api/config/runner', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ runner: name, group: group, action: 'add' })
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('✅ 添加成功！');
+          hideAddModal();
+          loadData();
+        } else {
+          alert('添加失败：' + (data.error || '未知错误'));
+        }
+      } catch (error) {
+        alert('添加失败：' + error.message);
+      }
+    }
+    
+    document.getElementById('addModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'addModal') hideAddModal();
+    });
+    
+    loadData();
+  </script>
+</body>
+</html>

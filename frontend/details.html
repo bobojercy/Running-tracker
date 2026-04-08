@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>跑步明细 - 轻跑如风</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 15px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    header { text-align: center; color: white; margin-bottom: 20px; }
+    header h1 { font-size: 1.8em; margin-bottom: 8px; }
+    header p { opacity: 0.9; font-size: 0.95em; }
+    
+    .nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .nav a {
+      background: rgba(255,255,255,0.2); color: white; padding: 10px 20px;
+      border-radius: 25px; text-decoration: none; transition: all 0.3s;
+      backdrop-filter: blur(10px); font-size: 0.95em;
+    }
+    .nav a:active { background: rgba(255,255,255,0.4); }
+    .nav a.active { background: white; color: #667eea; }
+    
+    .card {
+      background: rgba(255,255,255,0.95); border-radius: 12px; padding: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15); margin-bottom: 20px;
+    }
+    
+    .filter-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .filter-group label {
+      font-size: 0.9em;
+      color: #666;
+      font-weight: 600;
+    }
+    
+    .filter-group select,
+    .filter-group input {
+      padding: 10px 15px;
+      border: 2px solid #eee;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    
+    .filter-group select:focus,
+    .filter-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .btn-query {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      width: 100%;
+    }
+    
+    .btn-query:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    }
+    
+    .stats-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.8em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 0.85em;
+      opacity: 0.9;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .detail-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .detail-table th {
+      background: #f8f9fa;
+      padding: 12px 8px;
+      text-align: left;
+      font-weight: 600;
+      color: #333;
+      font-size: 0.9em;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .detail-table td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 0.9em;
+    }
+    
+    /* 图片列样式 */
+    .detail-table .img-col {
+      width: 80px;
+      text-align: center;
+    }
+    
+    .thumb-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid #e0e0e0;
+    }
+    
+    .thumb-img:hover {
+      transform: scale(1.1);
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+    }
+    
+    .no-img {
+      color: #ccc;
+      font-size: 1.5em;
+    }
+    
+    /* 图片查看器 */
+    .image-viewer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    
+    .image-viewer.active {
+      display: flex;
+    }
+    
+    .image-viewer img {
+      max-width: 90%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    
+    .image-viewer .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+      transition: all 0.3s;
+      z-index: 10001;
+    }
+    
+    .image-viewer .close-btn:hover {
+      color: #667eea;
+      transform: rotate(90deg);
+    }
+    
+    .image-viewer .info {
+      color: white;
+      margin-top: 15px;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+    
+    .detail-table tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .detail-table .num {
+      text-align: right;
+      font-family: 'SF Mono', Monaco, monospace;
+    }
+    
+    .detail-table .center {
+      text-align: center;
+    }
+    
+    .btn-view-img {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85em;
+      transition: all 0.3s;
+    }
+    .btn-view-img:hover {
+      background: #5568d3;
+    }
+    
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+    
+    .btn-export {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-export:hover {
+      background: #218838;
+    }
+    
+    @media (max-width: 768px) {
+      .filter-bar { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-list" style="color:#fff;"></i> 跑步明细查询</h1>
+      <p>按组别、人员、日期筛选查看</p>
+    </header>
+    
+    <nav class="nav">
+      <a href="/"><i class="fas fa-house" style="margin-right:6px;"></i>首页</a>
+      <a href="/upload"><i class="fas fa-cloud-arrow-up" style="margin-right:6px;"></i>上传</a>
+      <a href="/stats"><i class="fas fa-chart-simple" style="margin-right:6px;"></i>统计</a>
+      <a href="/runners"><i class="fas fa-users-line" style="margin-right:6px;"></i>人员</a>
+      <a href="/details" class="active"><i class="fas fa-list" style="margin-right:6px;"></i>明细</a>
+    </nav>
+    
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+        <h2 style="color:#333;">🔍 筛选条件</h2>
+        <button class="btn-export" onclick="exportToCSV()">
+          <i class="fas fa-file-csv"></i> 导出 CSV
+        </button>
+      </div>
+      
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>组别</label>
+          <select id="groupFilter" onchange="onGroupChange()">
+            <option value="">全部组别</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label>人员</label>
+          <select id="runnerFilter">
+            <option value="">全部人员</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label>开始日期</label>
+          <input type="date" id="startDate">
+        </div>
+        
+        <div class="filter-group">
+          <label>结束日期</label>
+          <input type="date" id="endDate">
+        </div>
+      </div>
+      
+      <button class="btn-query" onclick="queryData()">
+        <i class="fas fa-search"></i> 查询
+      </button>
+    </div>
+    
+    <div class="card" id="resultCard" style="display:none;">
+      <h2 style="color:#333;margin-bottom:15px;">📊 查询结果</h2>
+      
+      <div class="stats-summary" id="statsSummary">
+        <!-- 统计卡片 -->
+      </div>
+      
+      <div class="table-container">
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>图片</th>
+              <th>日期</th>
+              <th>人员</th>
+              <th>组别</th>
+              <th class="num">距离 (km)</th>
+              <th class="num">配速</th>
+              <th class="num">用时</th>
+              <th class="num">卡路里</th>
+            </tr>
+          </thead>
+          <tbody id="resultBody">
+            <tr><td colspan="7" class="empty">加载中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- 图片查看器 -->
+    <div class="image-viewer" id="imageViewer" onclick="closeImage()">
+      <span class="close-btn">&times;</span>
+      <img id="viewerImage" src="" alt="大图预览">
+      <div class="info" id="viewerInfo"></div>
+    </div>
+  </div>
+  
+  <script>
+    let config = null;
+    let allRuns = [];
+    let filteredRuns = [];
+    
+    // 初始化
+    async function init() {
+      try {
+        const [configRes, runsRes] = await Promise.all([
+          fetch('/api/config?t=' + Date.now()),
+          fetch('/api/runs?t=' + Date.now())
+        ]);
+        
+        config = await configRes.json();
+        const runsData = await runsRes.json();
+        allRuns = runsData.runs || [];
+        
+        // 设置默认日期（本月）
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        document.getElementById('startDate').value = firstDay.toISOString().split('T')[0];
+        document.getElementById('endDate').value = today.toISOString().split('T')[0];
+        
+        // 填充组别下拉框
+        const groupFilter = document.getElementById('groupFilter');
+        config.groups.forEach(g => {
+          const option = document.createElement('option');
+          option.value = g;
+          option.textContent = g;
+          groupFilter.appendChild(option);
+        });
+        
+        // 填充人员下拉框
+        updateRunnerFilter();
+        
+      } catch (error) {
+        console.error('初始化失败:', error);
+      }
+    }
+    
+    // 组别变化时更新人员列表
+    function onGroupChange() {
+      updateRunnerFilter();
+    }
+    
+    // 更新人员下拉框
+    function updateRunnerFilter() {
+      const selectedGroup = document.getElementById('groupFilter').value;
+      const runnerFilter = document.getElementById('runnerFilter');
+      
+      runnerFilter.innerHTML = '<option value="">全部人员</option>';
+      
+      let runners = config.runners;
+      if (selectedGroup) {
+        runners = runners.filter(r => r.group === selectedGroup);
+      }
+      
+      runners.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'zh-CN'));
+      
+      runners.forEach(r => {
+        const option = document.createElement('option');
+        option.value = r.name;
+        option.textContent = r.name;
+        runnerFilter.appendChild(option);
+      });
+    }
+    
+    // 查询数据
+    function queryData() {
+      const group = document.getElementById('groupFilter').value;
+      const runner = document.getElementById('runnerFilter').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      
+      // 筛选数据
+      filteredRuns = allRuns.filter(run => {
+        // 组别筛选
+        if (group) {
+          const runnerConfig = config.runners.find(r => r.name === run.runner);
+          if (!runnerConfig || runnerConfig.group !== group) return false;
+        }
+        
+        // 人员筛选
+        if (runner && run.runner !== runner) return false;
+        
+        // 日期筛选
+        if (startDate && run.date < startDate) return false;
+        if (endDate && run.date > endDate) return false;
+        
+        return true;
+      });
+      
+      // 按日期倒序排序
+      filteredRuns.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      // 显示结果
+      showResults();
+    }
+    
+    // 显示结果
+    function showResults() {
+      document.getElementById('resultCard').style.display = 'block';
+      
+      // 计算统计
+      const totalRuns = filteredRuns.length;
+      const totalDistance = filteredRuns.reduce((sum, r) => sum + (r.distance || 0), 0);
+      const totalCalories = filteredRuns.reduce((sum, r) => sum + (r.calories || 0), 0);
+      const uniqueRunners = new Set(filteredRuns.map(r => r.runner)).size;
+      
+      // 显示统计卡片
+      document.getElementById('statsSummary').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-value">${totalRuns}</div>
+          <div class="stat-label">跑步次数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${totalDistance.toFixed(2)}</div>
+          <div class="stat-label">总跑量 (km)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${totalCalories}</div>
+          <div class="stat-label">总卡路里</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${uniqueRunners}</div>
+          <div class="stat-label">参与人数</div>
+        </div>
+      `;
+      
+      // 显示表格
+      const tbody = document.getElementById('resultBody');
+      
+      if (filteredRuns.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">暂无符合条件的记录</td></tr>';
+        return;
+      }
+      
+      // 构建组别映射
+      const runnerGroupMap = {};
+      config.runners.forEach(r => {
+        runnerGroupMap[r.name] = r.group;
+      });
+      
+      tbody.innerHTML = filteredRuns.map(run => {
+        const group = runnerGroupMap[run.runner] || '-';
+        const hasImage = run.imageUrl || run.imageFilename;
+        const imgUrl = run.imageUrl || (run.imageFilename ? `/uploads/${run.imageFilename}` : '');
+        
+        return `
+          <tr>
+            <td class="img-col">
+              ${hasImage 
+                ? `<img src="${imgUrl}" alt="跑步截图" class="thumb-img" onclick="viewImage('${imgUrl}', '${run.runner}', '${run.date}')">`
+                : `<span class="no-img"><i class="fas fa-image"></i></span>`
+              }
+            </td>
+            <td>${run.date}</td>
+            <td>${run.runner}</td>
+            <td>${group}</td>
+            <td class="num">${run.distance?.toFixed(2) || '-'}</td>
+            <td class="num">${run.pace || '-'}</td>
+            <td class="num">${run.duration || '-'}</td>
+            <td class="num">${run.calories || '-'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    // 查看图片
+    function viewImage(url, runner, date) {
+      const viewer = document.getElementById('imageViewer');
+      const img = document.getElementById('viewerImage');
+      const info = document.getElementById('viewerInfo');
+      
+      img.src = url;
+      info.textContent = `${runner} - ${date}`;
+      viewer.classList.add('active');
+      
+      // 阻止事件冒泡
+      event.stopPropagation();
+    }
+    
+    // 关闭图片查看器
+    function closeImage() {
+      const viewer = document.getElementById('imageViewer');
+      viewer.classList.remove('active');
+    }
+    
+    // ESC 键关闭图片
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeImage();
+      }
+    });
+    
+    // 导出 CSV
+    function exportToCSV() {
+      if (filteredRuns.length === 0) {
+        alert('没有可导出的数据');
+        return;
+      }
+      
+      // 构建组别映射
+      const runnerGroupMap = {};
+      config.runners.forEach(r => {
+        runnerGroupMap[r.name] = r.group;
+      });
+      
+      // CSV 内容
+      const headers = ['图片', '日期', '人员', '组别', '距离 (km)', '配速', '用时', '卡路里'];
+      const rows = filteredRuns.map(run => [
+        run.imageUrl || run.imageFilename ? '有图' : '无图',
+        run.date,
+        run.runner,
+        runnerGroupMap[run.runner] || '-',
+        run.distance?.toFixed(2) || '-',
+        run.pace || '-',
+        run.duration || '-',
+        run.calories || '-'
+      ]);
+      
+      // 生成 CSV
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+      
+      // 下载
+      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `跑步明细_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    // 初始化
+    init();
+  </script>
+</body>
+</html>
