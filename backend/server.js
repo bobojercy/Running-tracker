@@ -5,7 +5,7 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { recognizeRunningData, validateRunningData } = require('./ocr');
 const os = require('os');
-const { getConfig, saveConfig, updateRunnerGroup, getGroupStats, initConfig } = require('./config');
+const { getConfig, saveConfig, updateRunnerGroup, getGroupStats, initConfig, addGroup, updateGroup, deleteGroup, deleteRunner } = require('./config');
 
 // 初始化配置
 initConfig();
@@ -573,6 +573,60 @@ app.post('/api/config/runner', (req, res) => {
     res.json({ success: true });
   } else {
     res.status(404).json({ error: '人员不存在' });
+  }
+});
+
+// API: 组别管理
+// 新增组别
+app.post('/api/config/group', (req, res) => {
+  const { groupName, action, oldName } = req.body;
+
+  if (!groupName) {
+    return res.status(400).json({ error: '组别名称必填' });
+  }
+
+  if (action === 'add') {
+    const result = addGroup(groupName);
+    if (result.success) {
+      res.json({ success: true });
+    } else {
+      res.status(400).json(result);
+    }
+  } else if (action === 'update') {
+    if (!oldName) {
+      return res.status(400).json({ error: '原组别名称必填' });
+    }
+    const result = updateGroup(oldName, groupName);
+    if (result.success) {
+      res.json({ success: true });
+    } else {
+      res.status(400).json(result);
+    }
+  } else if (action === 'delete') {
+    const result = deleteGroup(groupName);
+    if (result.success) {
+      res.json({ success: true });
+    } else {
+      res.status(400).json(result);
+    }
+  } else {
+    res.status(400).json({ error: '无效的操作类型' });
+  }
+});
+
+// API: 删除人员
+app.delete('/api/config/runner/:name', (req, res) => {
+  const { name } = req.params;
+
+  if (!name) {
+    return res.status(400).json({ error: '人员姓名必填' });
+  }
+
+  const result = deleteRunner(name);
+  if (result.success) {
+    res.json({ success: true });
+  } else {
+    res.status(400).json(result);
   }
 });
 

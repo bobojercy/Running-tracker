@@ -11,84 +11,151 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 15px;
+      padding: 20px;
     }
-    .container { max-width: 1000px; margin: 0 auto; }
-    
-    header { text-align: center; color: white; margin-bottom: 20px; }
-    header h1 { font-size: 1.8em; margin-bottom: 8px; }
-    header p { opacity: 0.9; font-size: 0.95em; }
-    
-    .nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    header { text-align: center; color: white; margin-bottom: 25px; }
+    header h1 { font-size: 2em; margin-bottom: 8px; }
+    header p { opacity: 0.9; font-size: 1em; }
+
+    .nav { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; }
     .nav a {
-      background: rgba(255,255,255,0.2); color: white; padding: 10px 20px;
+      background: rgba(255,255,255,0.25); color: white; padding: 12px 24px;
       border-radius: 25px; text-decoration: none; transition: all 0.3s;
-      backdrop-filter: blur(10px); font-size: 0.95em;
+      backdrop-filter: blur(10px); font-size: 1em; font-weight: 500;
     }
-    .nav a:active { background: rgba(255,255,255,0.4); }
-    .nav a.active { background: white; color: #667eea; }
-    
+    .nav a:hover { background: rgba(255,255,255,0.35); transform: translateY(-2px); }
+    .nav a:active { background: rgba(255,255,255,0.45); }
+    .nav a.active { background: white; color: #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+
     .card {
-      background: rgba(255,255,255,0.95); border-radius: 12px; padding: 20px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.15); margin-bottom: 20px;
+      background: rgba(255,255,255,0.98); border-radius: 16px; padding: 25px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.12); margin-bottom: 25px;
     }
-    
+
     .group-section {
-      background: #f8f9fa; border-radius: 12px; padding: 20px; margin-bottom: 15px;
+      background: #fafbfc; border-radius: 12px; padding: 20px; margin-bottom: 20px;
+      border: 1px solid #eef0f2;
     }
-    
+
     .group-header {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 15px;
-      padding-bottom: 10px; border-bottom: 2px solid #e0e0e0;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+      padding: 12px 15px; background: white; border-radius: 10px;
       cursor: pointer; user-select: none; transition: all 0.3s;
+      border: 1px solid #eef0f2;
     }
-    .group-header:hover { background: rgba(102,126,234,0.05); }
-    .group-header .toggle-icon { transition: transform 0.3s; font-size: 0.9em; }
+    .group-header:hover { box-shadow: 0 4px 15px rgba(102,126,234,0.1); }
+    .group-header .toggle-icon { transition: transform 0.3s; font-size: 1em; color: #667eea; }
     .group-header.collapsed .toggle-icon { transform: rotate(-90deg); }
     .group-runners.collapsed { display: none; }
-    
-    .group-runners { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
-    
+    .group-title { font-weight: 600; color: #333; font-size: 1.1em; }
+    .group-count { color: #888; font-size: 0.9em; margin-left: auto; }
+
+    .group-runners { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+
     .runner-item {
-      background: #f8f9fa; border-radius: 10px; padding: 15px;
+      background: white; border-radius: 12px; padding: 18px 20px;
       display: flex; justify-content: space-between; align-items: center;
-      border-left: 4px solid #667eea; transition: all 0.3s;
+      border: 1px solid #eef0f2; border-left: 4px solid #667eea;
+      transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
-    .runner-item:hover { box-shadow: 0 4px 15px rgba(102,126,234,0.2); transform: translateX(3px); }
-    
-    .runner-name { font-weight: 600; color: #333; font-size: 1.1em; }
-    
+    .runner-item:hover { box-shadow: 0 6px 20px rgba(102,126,234,0.15); transform: translateY(-2px); border-left-color: #764ba2; }
+
+    .runner-name { font-weight: 600; color: #333; font-size: 1.08em; }
+
+    .btn-detail, .btn-edit, .btn-delete {
+      color: white; border: none; padding: 8px 14px; border-radius: 8px;
+      cursor: pointer; font-size: 0.85em; transition: all 0.3s;
+      display: inline-flex; align-items: center; gap: 6px; margin-left: 8px;
+      font-weight: 500;
+    }
     .btn-detail {
-      background: linear-gradient(135deg, #667eea, #764ba2); color: white;
-      border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer;
-      font-size: 0.85em; transition: all 0.3s; display: inline-flex;
-      align-items: center; gap: 6px; margin-left: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    .btn-edit {
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+    }
+    .btn-delete {
+      background: linear-gradient(135deg, #e74444, #c0392b);
     }
     .btn-detail:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
-    
-    .runner-group { display: flex; align-items: center; gap: 10px; }
-    .runner-group select { padding: 6px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9em; background: white; }
-    .group-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: 600; background: #667eea; color: white; }
-    
+    .btn-edit:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(243,156,18,0.4); }
+    .btn-delete:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(231,68,68,0.4); }
+
+    .runner-actions select {
+      padding: 8px 32px 8px 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.85em;
+      background: white;
+      min-width: 110px;
+      cursor: pointer;
+      transition: all 0.3s;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      font-weight: 500;
+      color: #333;
+    }
+    .runner-actions select:hover {
+      border-color: #667eea;
+      box-shadow: 0 2px 8px rgba(102,126,234,0.15);
+    }
+    .runner-actions select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+    }
+
+
     .stats-preview { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; }
-    
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-top: 15px; }
+
     .stat-card {
       background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white; padding: 15px; border-radius: 10px; text-align: center;
+      color: white; padding: 20px; border-radius: 12px; text-align: center;
+      box-shadow: 0 6px 20px rgba(102,126,234,0.3);
     }
-    .stat-value { font-size: 1.8em; font-weight: bold; margin-bottom: 5px; }
-    .stat-label { font-size: 0.85em; opacity: 0.9; }
-    
-    .loading { text-align: center; padding: 40px; color: #666; }
-    
+    .stat-value { font-size: 2em; font-weight: bold; margin-bottom: 5px; }
+    .stat-label { font-size: 0.9em; opacity: 0.95; margin-bottom: 8px; }
+
+    .loading { text-align: center; padding: 50px; color: #999; font-size: 1em; }
+
     .btn-add {
       background: linear-gradient(135deg, #667eea, #764ba2); color: white;
-      border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;
-      font-size: 0.95em; transition: all 0.3s;
+      border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer;
+      font-size: 1em; transition: all 0.3s; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 8px;
     }
-    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
-    
+    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+
+    .runner-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .group-item {
+      background: white; border-radius: 12px; padding: 18px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; border: 1px solid #eef0f2;
+      border-left: 4px solid #764ba2;
+      transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .group-item:hover { box-shadow: 0 6px 20px rgba(118,75,162,0.15); transform: translateY(-2px); }
+    .group-item-name { font-weight: 600; color: #333; font-size: 1.08em; }
+    .group-item-actions { display: flex; gap: 10px; }
+    .group-badge {
+      padding: 5px 12px; border-radius: 12px; font-size: 0.85em;
+      font-weight: 600; background: linear-gradient(135deg, #667eea, #764ba2); color: white;
+      display: inline-block; min-width: 60px; text-align: center;
+    }
+
     .modal {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5); display: flex;
@@ -135,20 +202,110 @@
       border-radius: 8px; cursor: pointer; font-size: 0.9em; transition: all 0.3s;
     }
     .btn-close:hover { background: #e0e0e0; }
-    
+
+    /* 确认对话框特殊样式 */
+    #confirmMessage {
+      white-space: pre-wrap;
+    }
+
     .form-group { margin-bottom: 20px; }
     .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
     .modal-actions { display: flex; gap: 15px; margin-top: 25px; }
     .btn-cancel, .btn-save {
       flex: 1; padding: 12px; border: none; border-radius: 8px;
-      font-size: 1em; cursor: pointer; transition: all 0.3s;
+      font-size: 1em; cursor: pointer; transition: all 0.3s; font-weight: 500;
     }
     .btn-cancel { background: #f0f0f0; color: #666; }
+    .btn-cancel:hover { background: #e0e0e0; }
     .btn-save { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-    
+    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      header h1 { font-size: 1.5em; }
+      header p { font-size: 0.9em; }
+      .nav { gap: 6px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+      .nav a { padding: 8px 14px; font-size: 0.85em; white-space: nowrap; }
+      .card { padding: 15px; }
+      .group-section { padding: 15px; }
+      .group-header { padding: 10px 12px; }
+      .group-title { font-size: 1em; }
+      .group-count { font-size: 0.85em; }
+      .group-runners { grid-template-columns: 1fr; }
+      .runner-item { padding: 15px; }
+      .runner-name { font-size: 1em; }
+      .btn-detail, .btn-edit, .btn-delete { padding: 6px 12px; font-size: 0.8em; }
+      .runner-actions select { padding: 6px 28px 6px 10px; font-size: 0.8em; min-width: 100px; }
+      .group-badge { padding: 4px 10px; font-size: 0.8em; }
+      .group-item { padding: 15px; flex-direction: column; gap: 12px; text-align: center; }
+      .group-item-name { font-size: 1em; }
+      .group-item-actions { justify-content: center; flex-wrap: wrap; }
+      .btn-add { padding: 10px 18px; font-size: 0.9em; }
+      .modal-content { width: 95%; max-width: 350px; padding: 20px; }
+      .modal-actions { flex-direction: column; gap: 10px; }
+      .btn-cancel, .btn-save { width: 100%; }
+      .detail-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .detail-stat-value { font-size: 1.2em; }
+      .detail-stat-label { font-size: 0.75em; }
+      .detail-table { font-size: 0.85em; }
+      .detail-table th, .detail-table td { padding: 8px 4px; }
+
+      /* 移动端按钮横向滚动 */
+      .runner-actions {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        padding-bottom: 5px;
+      }
+      .runner-actions::-webkit-scrollbar {
+        height: 3px;
+      }
+      .runner-actions::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+      }
+    }
+
     @media (max-width: 480px) {
-      .runner-item { flex-direction: column; gap: 10px; text-align: center; }
-      .runner-group { flex-direction: column; }
+      header h1 { font-size: 1.3em; }
+      .nav a { padding: 6px 10px; font-size: 0.8em; }
+      .card { padding: 12px; border-radius: 10px; }
+      .group-section { padding: 12px; border-radius: 10px; }
+      .group-header { padding: 8px 10px; }
+      .runner-item { padding: 12px; }
+      .btn-detail, .btn-edit, .btn-delete { padding: 5px 10px; font-size: 0.75em; }
+      .group-badge { display: none; }
+    }
+
+    /* Toast 提示样式 */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.95em;
+      font-weight: 500;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .toast-success {
+      background: linear-gradient(135deg, #28a745, #20c997);
+    }
+    .toast-error {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+    }
+    .toast-info {
+      background: linear-gradient(135deg, #17a2b8, #138496);
     }
   </style>
 </head>
@@ -176,6 +333,17 @@
         <div class="loading">加载中...</div>
       </div>
     </div>
+
+    <!-- 组别管理 -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+        <h2 style="color:#333;">🗂️ 组别管理</h2>
+        <button class="btn-add" onclick="showAddGroup()">➕ 新增组别</button>
+      </div>
+      <div id="groupList">
+        <div class="loading">加载中...</div>
+      </div>
+    </div>
     
     <!-- 新增人员弹窗 -->
     <div id="addModal" class="modal" style="display:none;">
@@ -188,14 +356,6 @@
         <div class="form-group">
           <label>组别</label>
           <select id="newRunnerGroup" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;">
-            <option value="第一组">第一组</option>
-            <option value="第二组">第二组</option>
-            <option value="第三组">第三组</option>
-            <option value="第四组">第四组</option>
-            <option value="第五组">第五组</option>
-            <option value="第六组">第六组</option>
-            <option value="欢乐组">欢乐组</option>
-            <option value="梦之队">梦之队</option>
           </select>
         </div>
         <div class="modal-actions">
@@ -223,7 +383,53 @@
         </div>
       </div>
     </div>
-    
+
+    <!-- 新增组别弹窗 -->
+    <div id="addGroupModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3 style="margin-bottom:20px;color:#333;">➕ 新增组别</h3>
+        <div class="form-group">
+          <label>组别名称</label>
+          <input type="text" id="newGroupName" placeholder="请输入组别名称" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;">
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="hideAddGroupModal()">取消</button>
+          <button class="btn-save" onclick="saveNewGroup()">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 编辑组别弹窗 -->
+    <div id="editGroupModal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3 style="margin-bottom:20px;color:#333;">✏️ 修改组别名称</h3>
+        <div class="form-group">
+          <label>原组别名称</label>
+          <input type="text" id="oldGroupName" readonly style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;background:#f5f5f5;">
+        </div>
+        <div class="form-group">
+          <label>新组别名称</label>
+          <input type="text" id="newGroupNameEdit" placeholder="请输入新组别名称" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:1em;">
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="hideEditGroupModal()">取消</button>
+          <button class="btn-save" onclick="saveEditGroup()">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 确认对话框 -->
+    <div id="confirmModal" class="modal" style="display:none;">
+      <div class="modal-content" style="max-width:350px;">
+        <h3 style="margin-bottom:15px;color:#333;" id="confirmTitle">确认</h3>
+        <p style="color:#666;line-height:1.6;margin-bottom:20px;" id="confirmMessage"></p>
+        <div class="modal-actions" style="margin-top:0;">
+          <button class="btn-cancel" id="confirmCancelBtn" style="flex:1;">取消</button>
+          <button class="btn-save" id="confirmOkBtn" style="flex:1;">确定</button>
+        </div>
+      </div>
+    </div>
+
     <!-- 图片查看弹窗 -->
     <div id="imageModal" class="modal" style="display:none;">
       <div class="modal-content image-modal-content">
@@ -287,28 +493,80 @@
       </div>
     </div>
   </div>
-  
+
+  <!-- Toast 提示 -->
+  <div id="toast" class="toast"></div>
+
   <script>
     let config = null;
     let groupStats = null;
-    
+    let confirmCallback = null;
+
+    // 显示确认对话框
+    function showConfirm(title, message, onConfirm) {
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmMessage').textContent = message;
+      document.getElementById('confirmModal').style.display = 'flex';
+      confirmCallback = onConfirm;
+    }
+
+    // 隐藏确认对话框
+    function hideConfirmModal() {
+      document.getElementById('confirmModal').style.display = 'none';
+      confirmCallback = null;
+    }
+
+    // 确认按钮点击
+    document.getElementById('confirmOkBtn')?.addEventListener('click', () => {
+      if (confirmCallback) confirmCallback();
+      hideConfirmModal();
+    });
+
+    // 取消按钮点击
+    document.getElementById('confirmCancelBtn')?.addEventListener('click', () => {
+      hideConfirmModal();
+    });
+
+    // Toast 提示函数
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast toast-' + type + ' show';
+      setTimeout(() => {
+        toast.className = 'toast';
+      }, 2500);
+    }
+
     async function loadData() {
       try {
         const [configRes, statsRes] = await Promise.all([
           fetch('/api/config?t=' + Date.now()),
           fetch('/api/stats/by-group?t=' + Date.now())
         ]);
-        
+
         config = await configRes.json();
         groupStats = await statsRes.json();
-        
+
         renderRunners();
         renderGroupStats();
-        
+        renderGroupList();
+        fillGroupSelects();
+
       } catch (error) {
         console.error('加载失败:', error);
         document.getElementById('runnerList').innerHTML = '<div class="loading">加载失败，请刷新重试</div>';
+        document.getElementById('groupList').innerHTML = '<div class="loading">加载失败，请刷新重试</div>';
       }
+    }
+
+    // 填充组别下拉列表
+    function fillGroupSelects() {
+      const select = document.getElementById('newRunnerGroup');
+      if (!select || !config || !config.groups) return;
+
+      select.innerHTML = config.groups.map(g =>
+        `<option value="${g}">${g}</option>`
+      ).join('');
     }
     
     function renderRunners() {
@@ -335,9 +593,9 @@
       list.innerHTML = config.groups.map((group, index) => {
         const runners = runnersByGroup[group] || [];
         if (runners.length === 0) return '';
-        
-        const isCollapsed = index > 0 ? 'collapsed' : '';
-        
+
+        const isCollapsed = 'collapsed';
+
         return `
           <div class="group-section">
             <div class="group-header ${isCollapsed}" onclick="toggleGroup('${group}')">
@@ -348,20 +606,25 @@
             <div class="group-runners ${isCollapsed}" id="group-${group}">
               ${runners.map(runner => `
                 <div class="runner-item">
-                  <div>
-                    <span class="runner-name">${runner.name}</span>
-                    <button class="btn-detail" onclick="showDetail('${runner.name}', event)" style="margin-left:6px;">
-                      <i class="fas fa-list"></i> 明细
-                    </button>
-                    <button class="btn-detail" onclick="showEdit('${runner.name}', event)" style="margin-left:6px;background:linear-gradient(135deg, #f39c12, #e67e22);">
-                      <i class="fas fa-pen"></i> 编辑
-                    </button>
-                  </div>
-                  <div class="runner-group">
-                    <span class="group-badge">${runner.group || '未分配'}</span>
-                    <select onchange="updateGroup('${runner.name}', this.value)" onclick="if(event) event.stopPropagation()">
-                      ${config.groups.map(g => `<option value="${g}" ${runner.group === g ? 'selected' : ''}>${g}</option>`).join('')}
-                    </select>
+                  <div style="display:flex;flex-direction:column;gap:10px;flex:1;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                      <span class="runner-name">${runner.name}</span>
+                      <span class="group-badge">${runner.group || '未分配'}</span>
+                    </div>
+                    <div class="runner-actions" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                      <button class="btn-detail" onclick="showDetail('${runner.name}', event)">
+                        <i class="fas fa-list"></i> 明细
+                      </button>
+                      <button class="btn-edit" onclick="showEdit('${runner.name}', event)">
+                        <i class="fas fa-pen"></i> 编辑
+                      </button>
+                      <button class="btn-delete" onclick="deleteRunner('${runner.name}', event)">
+                        <i class="fas fa-trash"></i> 删除
+                      </button>
+                      <select onchange="updateGroup('${runner.name}', this.value)" onclick="if(event) event.stopPropagation()" style="margin-left:auto;min-width:100px;">
+                        ${config.groups.map(g => `<option value="${g}" ${runner.group === g ? 'selected' : ''}>${g}</option>`).join('')}
+                      </select>
+                    </div>
                   </div>
                 </div>
               `).join('')}
@@ -386,6 +649,36 @@
         </div>
       `).join('');
     }
+
+    function renderGroupList() {
+      const list = document.getElementById('groupList');
+      if (!config || !config.groups || config.groups.length === 0) {
+        list.innerHTML = '<div class="loading">暂无组别数据</div>';
+        return;
+      }
+
+      const groupRunnersCount = {};
+      config.groups.forEach(g => {
+        groupRunnersCount[g] = config.runners.filter(r => r.group === g).length;
+      });
+
+      list.innerHTML = config.groups.map(group => `
+        <div class="group-item">
+          <div>
+            <span class="group-item-name">${group}</span>
+            <span style="margin-left:10px;color:#666;font-size:0.9em;">(${groupRunnersCount[group]}人)</span>
+          </div>
+          <div class="group-item-actions">
+            <button class="btn-edit" onclick="showEditGroup('${group}', event)">
+              <i class="fas fa-pen"></i> 修改
+            </button>
+            <button class="btn-delete" onclick="deleteGroup('${group}', event)">
+              <i class="fas fa-trash"></i> 删除
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
     
     async function updateGroup(runnerName, newGroup) {
       try {
@@ -401,12 +694,13 @@
           const statsRes = await fetch('/api/stats/by-group');
           groupStats = await statsRes.json();
           renderGroupStats();
+          showToast('组别更新成功', 'success');
         } else {
-          alert('更新失败：' + (data.error || '未知错误'));
+          showToast('更新失败：' + (data.error || '未知错误'), 'error');
           loadData();
         }
       } catch (error) {
-        alert('更新失败：' + error.message);
+        showToast('更新失败：' + error.message, 'error');
         loadData();
       }
     }
@@ -519,11 +813,11 @@
     async function saveEditRunner() {
       const oldName = document.getElementById('oldRunnerName').value.trim();
       const newName = document.getElementById('newRunnerNameEdit').value.trim();
-      
-      if (!newName) { alert('请输入新姓名'); return; }
-      if (oldName === newName) { alert('新姓名与原姓名相同'); return; }
-      if (config.runners.find(r => r.name === newName)) { alert('该姓名已存在，请使用其他姓名'); return; }
-      
+
+      if (!newName) { showToast('请输入新姓名', 'error'); return; }
+      if (oldName === newName) { showToast('新姓名与原姓名相同', 'error'); return; }
+      if (config.runners.find(r => r.name === newName)) { showToast('该姓名已存在，请使用其他姓名', 'error'); return; }
+
       try {
         const response = await fetch('/api/config/runner', {
           method: 'POST',
@@ -532,51 +826,199 @@
         });
         const data = await response.json();
         if (data.success) {
-          alert('✅ 修改成功！');
+          showToast('修改成功！', 'success');
           hideEditModal();
           loadData();
         } else {
-          alert('修改失败：' + (data.error || '未知错误'));
+          showToast('修改失败：' + (data.error || '未知错误'), 'error');
         }
       } catch (error) {
-        alert('修改失败：' + error.message);
+        showToast('修改失败：' + error.message, 'error');
       }
     }
-    
+
     document.getElementById('editModal')?.addEventListener('click', (e) => {
       if (e.target.id === 'editModal') hideEditModal();
     });
-    
+
     async function saveNewRunner() {
       const name = document.getElementById('newRunnerName').value.trim();
       const group = document.getElementById('newRunnerGroup').value;
-      
-      if (!name) { alert('请输入姓名'); return; }
-      if (config.runners.find(r => r.name === name)) { alert('该人员已存在'); return; }
-      
-      try {
-        const response = await fetch('/api/config/runner', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ runner: name, group: group, action: 'add' })
-        });
-        const data = await response.json();
-        if (data.success) {
-          alert('✅ 添加成功！');
-          hideAddModal();
-          loadData();
-        } else {
-          alert('添加失败：' + (data.error || '未知错误'));
+
+      if (!name) { showToast('请输入姓名', 'error'); return; }
+      if (config.runners.find(r => r.name === name)) { showToast('该人员已存在', 'error'); return; }
+
+      showConfirm(
+        '新增人员',
+        '确定要添加人员 "' + name + '" 到 "' + group + '" 吗？',
+        () => {
+          fetch('/api/config/runner', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ runner: name, group: group, action: 'add' })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              showToast('添加成功！', 'success');
+              hideAddModal();
+              loadData();
+            } else {
+              showToast('添加失败：' + (data.error || '未知错误'), 'error');
+            }
+          })
+          .catch(error => {
+            showToast('添加失败：' + error.message, 'error');
+          });
         }
-      } catch (error) {
-        alert('添加失败：' + error.message);
-      }
+      );
     }
-    
+
     document.getElementById('addModal')?.addEventListener('click', (e) => {
       if (e.target.id === 'addModal') hideAddModal();
     });
-    
+
+    // 组别管理函数
+    function showAddGroup() {
+      document.getElementById('addGroupModal').style.display = 'flex';
+      document.getElementById('newGroupName').value = '';
+      document.getElementById('newGroupName').focus();
+    }
+
+    function hideAddGroupModal() { document.getElementById('addGroupModal').style.display = 'none'; }
+
+    function showEditGroup(groupName, event) {
+      if (event) event.stopPropagation();
+      document.getElementById('oldGroupName').value = groupName;
+      document.getElementById('newGroupNameEdit').value = groupName;
+      document.getElementById('editGroupModal').style.display = 'flex';
+      document.getElementById('newGroupNameEdit').focus();
+      document.getElementById('newGroupNameEdit').select();
+    }
+
+    function hideEditGroupModal() { document.getElementById('editGroupModal').style.display = 'none'; }
+
+    async function saveNewGroup() {
+      const groupName = document.getElementById('newGroupName').value.trim();
+
+      if (!groupName) { showToast('请输入组别名称', 'error'); return; }
+      if (config.groups.includes(groupName)) { showToast('该组别已存在', 'error'); return; }
+
+      try {
+        const response = await fetch('/api/config/group', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ groupName: groupName, action: 'add' })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast('添加成功！', 'success');
+          hideAddGroupModal();
+          loadData();
+        } else {
+          showToast('添加失败：' + (data.error || '未知错误'), 'error');
+        }
+      } catch (error) {
+        showToast('添加失败：' + error.message, 'error');
+      }
+    }
+
+    async function saveEditGroup() {
+      const oldName = document.getElementById('oldGroupName').value.trim();
+      const newName = document.getElementById('newGroupNameEdit').value.trim();
+
+      if (!newName) { showToast('请输入新组别名称', 'error'); return; }
+      if (oldName === newName) { showToast('新组别名称与原名称相同', 'error'); return; }
+      if (config.groups.includes(newName) && oldName !== newName) { showToast('该组别名称已存在', 'error'); return; }
+
+      try {
+        const response = await fetch('/api/config/group', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ groupName: newName, oldName: oldName, action: 'update' })
+        });
+        const data = await response.json();
+        if (data.success) {
+          showToast('修改成功！', 'success');
+          hideEditGroupModal();
+          loadData();
+        } else {
+          showToast('修改失败：' + (data.error || '未知错误'), 'error');
+        }
+      } catch (error) {
+        showToast('修改失败：' + error.message, 'error');
+      }
+    }
+
+    async function deleteGroup(groupName, event) {
+      if (event) event.stopPropagation();
+
+      const runnersInGroup = config.runners.filter(r => r.group === groupName).length;
+      if (runnersInGroup > 0) {
+        showToast('该组别下还有 ' + runnersInGroup + ' 名人员，请先将他们调到其他组别', 'error');
+        return;
+      }
+
+      showConfirm(
+        '删除组别',
+        '确定要删除组别 "' + groupName + '" 吗？此操作不可恢复。',
+        () => {
+          fetch('/api/config/group', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ groupName: groupName, action: 'delete' })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              showToast('删除成功！', 'success');
+              loadData();
+            } else {
+              showToast('删除失败：' + (data.error || '未知错误'), 'error');
+            }
+          })
+          .catch(error => {
+            showToast('删除失败：' + error.message, 'error');
+          });
+        }
+      );
+    }
+
+    document.getElementById('addGroupModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'addGroupModal') hideAddGroupModal();
+    });
+
+    document.getElementById('editGroupModal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'editGroupModal') hideEditGroupModal();
+    });
+
+    // 删除人员
+    function deleteRunner(runnerName, event) {
+      if (event) event.stopPropagation();
+
+      showConfirm(
+        '删除人员',
+        '确定要删除人员 "' + runnerName + '" 吗？\n\n注意：如果该人员有跑步记录，将无法删除。',
+        () => {
+          fetch('/api/config/runner/' + encodeURIComponent(runnerName), {
+            method: 'DELETE'
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              showToast('删除成功！', 'success');
+              loadData();
+            } else {
+              showToast('删除失败：' + (data.error || '未知错误'), 'error');
+            }
+          })
+          .catch(error => {
+            showToast('删除失败：' + error.message, 'error');
+          });
+        }
+      );
+    }
+
     loadData();
   </script>
 </body>

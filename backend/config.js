@@ -79,6 +79,92 @@ function updateRunnerGroup(runnerName, group) {
   return false;
 }
 
+// 删除人员
+function deleteRunner(runnerName) {
+  const config = getConfig();
+  const runnerIndex = config.runners.findIndex(r => r.name === runnerName);
+  if (runnerIndex === -1) {
+    return { success: false, error: '人员不存在' };
+  }
+
+  // 检查该人员是否有跑步记录
+  const runsFile = path.join(__dirname, '../data/runs.json');
+  if (fs.existsSync(runsFile)) {
+    const runsData = JSON.parse(fs.readFileSync(runsFile, 'utf8'));
+    const runnerRuns = runsData.runs?.filter(r => r.runner === runnerName) || [];
+    if (runnerRuns.length > 0) {
+      return {
+        success: false,
+        error: `该人员还有 ${runnerRuns.length} 条跑步记录，请先删除相关记录`
+      };
+    }
+  }
+
+  config.runners.splice(runnerIndex, 1);
+  saveConfig(config);
+  return { success: true };
+}
+
+// 新增组别
+function addGroup(groupName) {
+  const config = getConfig();
+  if (config.groups.includes(groupName)) {
+    return { success: false, error: '该组别已存在' };
+  }
+  config.groups.push(groupName);
+  saveConfig(config);
+  return { success: true };
+}
+
+// 修改组别名称
+function updateGroup(oldName, newName) {
+  const config = getConfig();
+
+  if (!config.groups.includes(oldName)) {
+    return { success: false, error: '原组别不存在' };
+  }
+
+  if (config.groups.includes(newName) && oldName !== newName) {
+    return { success: false, error: '新组别名称已存在' };
+  }
+
+  // 更新组别列表
+  const index = config.groups.indexOf(oldName);
+  config.groups[index] = newName;
+
+  // 更新所有该组别下的人员
+  config.runners.forEach(runner => {
+    if (runner.group === oldName) {
+      runner.group = newName;
+    }
+  });
+
+  saveConfig(config);
+  return { success: true };
+}
+
+// 删除组别
+function deleteGroup(groupName) {
+  const config = getConfig();
+
+  if (!config.groups.includes(groupName)) {
+    return { success: false, error: '组别不存在' };
+  }
+
+  // 检查是否还有人员在该组别
+  const runnersInGroup = config.runners.filter(r => r.group === groupName);
+  if (runnersInGroup.length > 0) {
+    return {
+      success: false,
+      error: `该组别下还有 ${runnersInGroup.length} 名人员，请先将他们调到其他组别`
+    };
+  }
+
+  config.groups = config.groups.filter(g => g !== groupName);
+  saveConfig(config);
+  return { success: true };
+}
+
 // 按组统计
 function getGroupStats() {
   const config = getConfig();
@@ -169,5 +255,9 @@ module.exports = {
   saveConfig,
   updateRunnerGroup,
   getGroupStats,
-  initConfig
+  initConfig,
+  addGroup,
+  updateGroup,
+  deleteGroup,
+  deleteRunner
 };
