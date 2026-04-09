@@ -26,3 +26,13 @@ Thumbs.db
 # 临时文件
 tmp/
 temp/
+
+# 构建产物（pkg 打包）
+dist/
+
+# Docker
+*.local
+
+# 数据文件（可选，根据团队需求）
+data/runs.json
+data/config.json

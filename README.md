@@ -271,6 +271,13 @@ npm start
 # Ctrl + C 终止
 ```
 
+## 📦 部署文档
+
+详细部署指南请查看：
+
+- [**DEPLOY.md**](DEPLOY.md) - 完整部署文档（pkg、Docker、npm）
+- [**README_DEPLOY_WINDOWS.md**](README_DEPLOY_WINDOWS.md) - Windows 快速部署说明
+
 ## 📝 更新日志
 
 ### v1.2.0 (2026-04-08)
