@@ -1,0 +1,24 @@
+# 依赖
+node_modules
+npm-debug.log
+
+# 数据
+data/*.json
+uploads/*
+
+# 日志
+logs
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# 构建产物
+dist
