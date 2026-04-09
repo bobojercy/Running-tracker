@@ -1,0 +1,38 @@
+# 依赖
+node_modules/
+
+# 上传的截图
+uploads/*
+!uploads/.gitkeep
+
+# 日志
+logs/
+*.log
+
+# 备份文件
+*.backup
+*.tar.gz
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+tmp/
+temp/
+
+# 构建产物（pkg 打包）
+dist/
+
+# Docker
+*.local
+
+# 数据文件（可选，根据团队需求）
+data/runs.json
+data/config.json

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测试文件上传</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .upload-area {
+      border: 2px dashed #667eea;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: rgba(102,126,234,0.05);
+      user-select: none;
+    }
+    .upload-area:hover { background: rgba(102,126,234,0.1); }
+    #fileInput { display: none; }
+  </style>
+</head>
+<body>
+  <h1>文件上传测试</h1>
+  
+  <div class="upload-area" id="uploadArea">
+    <div>📷</div>
+    <div>点击或拖拽上传截图</div>
+    <div style="font-size:0.9em;color:#999;">支持 JPG、PNG 格式，最大 10MB</div>
+  </div>
+  
+  <input type="file" id="fileInput" accept="image/*">
+  
+  <div id="result" style="margin-top:20px;padding:15px;background:#f0f0f0;border-radius:8px;"></div>
+  
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const result = document.getElementById('result');
+    
+    console.log('uploadArea:', uploadArea);
+    console.log('fileInput:', fileInput);
+    
+    // 方法 1: 直接点击
+    uploadArea.addEventListener('click', function(e) {
+      console.log('Upload area clicked!', e);
+      fileInput.click();
+    });
+    
+    // 方法 2: 监听文件选择
+    fileInput.addEventListener('change', function(e) {
+      console.log('File changed!', e.target.files);
+      if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        result.innerHTML = `<strong>选中文件:</strong> ${file.name} (${file.size} bytes)`;
+      }
+      e.target.value = '';
+    });
+    
+    // 拖拽支持
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = 'rgba(102,126,234,0.2)';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.background = 'rgba(102,126,234,0.05)';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = 'rgba(102,126,234,0.05)';
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        const file = e.dataTransfer.files[0];
+        result.innerHTML = `<strong>拖拽文件:</strong> ${file.name} (${file.size} bytes)`;
+      }
+    });
+  </script>
+</body>
+</html>
