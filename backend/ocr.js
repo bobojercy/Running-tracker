@@ -8,21 +8,27 @@ const sharp = require('sharp');
 function runPaddleOCR(imagePath) {
   return new Promise((resolve, reject) => {
     const scriptPath = require('path').join(__dirname, 'paddle_ocr.py');
-    exec(`python3.8 ${scriptPath} "${imagePath}"`, { 
+    exec(`python3 ${scriptPath} "${imagePath}"`, {
       timeout: 120000,
       env: { ...process.env, PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK: 'True' }
     }, (error, stdout, stderr) => {
+      // 过滤非 JSON 行（如模型下载提示）
+      const jsonLines = stdout.trim().split('\n').filter(line => {
+        return line.startsWith('{') && line.endsWith('}');
+      });
+      const cleanOutput = jsonLines.join('');
+
       if (error) {
         console.error('PaddleOCR 失败:', error);
         reject(error);
         return;
       }
       try {
-        const result = JSON.parse(stdout);
+        const result = JSON.parse(cleanOutput);
         if (result.error) reject(new Error(result.error));
         else resolve(result);
       } catch (e) {
-        console.error('解析 PaddleOCR 失败:', e);
+        console.error('解析 PaddleOCR 失败:', e, '输出:', stdout);
         reject(e);
       }
     });

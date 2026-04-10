@@ -1,4 +1,4 @@
-FROM node:18-slim
+FROM node:20-slim
 
 # 安装 Python 和 PaddleOCR 依赖
 RUN apt-get update && apt-get install -y \
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --break-system-packages paddlepaddle paddleocr
+RUN pip3 install --break-system-packages paddlepaddle==2.6.2 paddleocr==2.9.1
 
 # 设置工作目录
 WORKDIR /app
@@ -18,10 +18,10 @@ COPY package*.json ./
 RUN npm install --production
 
 # 复制项目文件
-COPY . .
-
-# 创建数据目录
-RUN mkdir -p /app/data /app/uploads
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+COPY data/ ./data/
+COPY uploads/ ./uploads/
 
 # 暴露端口
 EXPOSE 3000

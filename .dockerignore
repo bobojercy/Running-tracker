@@ -2,10 +2,6 @@
 node_modules
 npm-debug.log
 
-# 数据
-data/*.json
-uploads/*
-
 # 日志
 logs
 *.log

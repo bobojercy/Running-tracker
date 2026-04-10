@@ -59,12 +59,28 @@
       border-radius: 8px;
       font-size: 1em;
       transition: border-color 0.3s;
+      font-family: inherit;
+      color: #333;
+      background-color: #fff;
     }
-    
+
     .filter-group select:focus,
     .filter-group input:focus {
       outline: none;
       border-color: #667eea;
+    }
+
+    /* 修复日期选择框字体颜色 */
+    .filter-group input[type="date"] {
+      color: #333;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    .filter-group input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.6;
     }
     
     .btn-query {
@@ -366,25 +382,21 @@
     let config = null;
     let allRuns = [];
     let filteredRuns = [];
-    
+    let runsLoaded = false;  // 标记是否已加载跑步数据
+
     // 初始化
     async function init() {
       try {
-        const [configRes, runsRes] = await Promise.all([
-          fetch('/api/config?t=' + Date.now()),
-          fetch('/api/runs?t=' + Date.now())
-        ]);
-        
+        // 只加载配置（组别、人员）
+        const configRes = await fetch('/api/config?t=' + Date.now());
         config = await configRes.json();
-        const runsData = await runsRes.json();
-        allRuns = runsData.runs || [];
-        
+
         // 设置默认日期（本月）
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
         document.getElementById('startDate').value = firstDay.toISOString().split('T')[0];
         document.getElementById('endDate').value = today.toISOString().split('T')[0];
-        
+
         // 填充组别下拉框
         const groupFilter = document.getElementById('groupFilter');
         config.groups.forEach(g => {
@@ -393,34 +405,48 @@
           option.textContent = g;
           groupFilter.appendChild(option);
         });
-        
+
         // 填充人员下拉框
         updateRunnerFilter();
-        
+
       } catch (error) {
         console.error('初始化失败:', error);
       }
     }
-    
+
+    // 加载跑步数据
+    async function loadRuns() {
+      if (runsLoaded) return;
+
+      try {
+        const runsRes = await fetch('/api/runs?t=' + Date.now());
+        const runsData = await runsRes.json();
+        allRuns = runsData.runs || [];
+        runsLoaded = true;
+      } catch (error) {
+        console.error('加载跑步数据失败:', error);
+      }
+    }
+
     // 组别变化时更新人员列表
     function onGroupChange() {
       updateRunnerFilter();
     }
-    
+
     // 更新人员下拉框
     function updateRunnerFilter() {
       const selectedGroup = document.getElementById('groupFilter').value;
       const runnerFilter = document.getElementById('runnerFilter');
-      
+
       runnerFilter.innerHTML = '<option value="">全部人员</option>';
-      
+
       let runners = config.runners;
       if (selectedGroup) {
         runners = runners.filter(r => r.group === selectedGroup);
       }
-      
+
       runners.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'zh-CN'));
-      
+
       runners.forEach(r => {
         const option = document.createElement('option');
         option.value = r.name;
@@ -428,14 +454,17 @@
         runnerFilter.appendChild(option);
       });
     }
-    
+
     // 查询数据
-    function queryData() {
+    async function queryData() {
+      // 先确保数据已加载
+      await loadRuns();
+
       const group = document.getElementById('groupFilter').value;
       const runner = document.getElementById('runnerFilter').value;
       const startDate = document.getElementById('startDate').value;
       const endDate = document.getElementById('endDate').value;
-      
+
       // 筛选数据
       filteredRuns = allRuns.filter(run => {
         // 组别筛选
@@ -443,20 +472,20 @@
           const runnerConfig = config.runners.find(r => r.name === run.runner);
           if (!runnerConfig || runnerConfig.group !== group) return false;
         }
-        
+
         // 人员筛选
         if (runner && run.runner !== runner) return false;
-        
+
         // 日期筛选
         if (startDate && run.date < startDate) return false;
         if (endDate && run.date > endDate) return false;
-        
+
         return true;
       });
-      
+
       // 按日期倒序排序
       filteredRuns.sort((a, b) => new Date(b.date) - new Date(a.date));
-      
+
       // 显示结果
       showResults();
     }
