@@ -1,8 +1,14 @@
-FROM node:18-alpine
+FROM node:18-slim
 
 # 安装 Python 和 PaddleOCR 依赖
-RUN apk add --no-cache python3 py3-pip py3-numpy py3-pillow && \
-    pip3 install --break-system-packages paddlepaddle paddleocr
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    libgl1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --break-system-packages paddlepaddle paddleocr
 
 # 设置工作目录
 WORKDIR /app
